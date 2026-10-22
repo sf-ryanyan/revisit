@@ -2,11 +2,6 @@
 
 **A client retention system for a small private clinic in the Bay Area.**
 
-![Live Demo](https://img.shields.io/badge/Live%20Demo-online-0A6B55?style=flat-square)
-![Single File](https://img.shields.io/badge/Build-single%20HTML%20file-555?style=flat-square)
-![No Dependencies](https://img.shields.io/badge/Dependencies-none-555?style=flat-square)
-![Bilingual](https://img.shields.io/badge/UI-%E4%B8%AD%E6%96%87%20%2F%20English-555?style=flat-square)
-
 **→ Live demo: https://sf-ryanyan.github.io/revisit/**
 
 *Fictional data. Nothing is actually sent.*
