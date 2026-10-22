@@ -1,0 +1,1690 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Revisit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: dark ink rail + light content canvas. Login gate first, then a 7-section console.
+   Display serif carries the brand and every headline number; everything else is quiet UI sans. */
+:root{
+  --bg:#F7F6F1; --surface:#FFFFFF; --surface-2:#F1F0EA; --surface-3:#FAF9F5;
+  --ink:#171D1A; --ink-2:#5B6562; --ink-3:#919996; --line:#E6E3DA; --line-2:#EFEDE5;
+  --accent:#0A6B55; --accent-2:#0E8469; --accent-soft:#E2EEE9; --accent-ink:#065040; --on-accent:#FFFFFF;
+  --gold:#8A6B1D; --gold-soft:#F4EEDC;
+  --warn:#A4600F; --warn-soft:#F8EDDC;
+  --alert:#9B3A34; --alert-soft:#F8E6E3;
+  --info:#2F5495; --info-soft:#E6EBF6;
+  --chart-1:#00785E; --chart-2:#C2651F;
+  --rail:#121D19; --rail-2:#1C2D27; --rail-3:#274037; --rail-ink:#E4EBE8; --rail-ink-2:#8DA49C;
+  --shadow:0 1px 2px rgba(23,29,26,.04), 0 8px 24px -16px rgba(23,29,26,.22);
+  --shadow-lg:0 24px 60px -24px rgba(23,29,26,.4);
+  --r:16px;
+  --fd:"Instrument Serif","Songti SC","Noto Serif CJK SC",Georgia,serif;
+  --fu:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111514; --surface:#191E1D; --surface-2:#232927; --surface-3:#1E2423;
+  --ink:#E9EDEB; --ink-2:#A3ADA9; --ink-3:#7A8481; --line:#2A312F; --line-2:#242A28;
+  --accent:#3FB893; --accent-2:#52CAA5; --accent-soft:#143229; --accent-ink:#6FD7B4; --on-accent:#08201A;
+  --gold:#C6A552; --gold-soft:#2D2614;
+  --warn:#D2964C; --warn-soft:#322615;
+  --alert:#DD827C; --alert-soft:#33201E;
+  --info:#8AA6DF; --info-soft:#1B2334;
+  --chart-1:#27A381; --chart-2:#CE7D33;
+  --rail:#0C1412; --rail-2:#17221E; --rail-3:#223229; --rail-ink:#E4EBE8; --rail-ink-2:#85978F;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  --shadow-lg:0 24px 60px -24px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#111514; --surface:#191E1D; --surface-2:#232927; --surface-3:#1E2423;
+  --ink:#E9EDEB; --ink-2:#A3ADA9; --ink-3:#7A8481; --line:#2A312F; --line-2:#242A28;
+  --accent:#3FB893; --accent-2:#52CAA5; --accent-soft:#143229; --accent-ink:#6FD7B4; --on-accent:#08201A;
+  --gold:#C6A552; --gold-soft:#2D2614;
+  --warn:#D2964C; --warn-soft:#322615;
+  --alert:#DD827C; --alert-soft:#33201E;
+  --info:#8AA6DF; --info-soft:#1B2334;
+  --chart-1:#27A381; --chart-2:#CE7D33;
+  --rail:#0C1412; --rail-2:#17221E; --rail-3:#223229; --rail-ink:#E4EBE8; --rail-ink-2:#85978F;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  --shadow-lg:0 24px 60px -24px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--fu);font-size:14px;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,p{margin:0;text-wrap:balance}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px;border-radius:8px}
+.num{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ============ LOGIN ============ */
+.login{min-height:100svh;display:flex;flex-direction:column;background:var(--rail);color:var(--rail-ink);
+  padding:clamp(20px,5vw,48px) clamp(16px,5vw,48px);position:relative;overflow:hidden}
+.login::after{content:"";position:absolute;width:640px;height:640px;right:-200px;top:-260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(63,184,147,.16),transparent 68%);pointer-events:none}
+.login .top{display:flex;justify-content:space-between;align-items:center;gap:12px;position:relative;z-index:1}
+.login .mid{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:0;
+  padding-block:40px;position:relative;z-index:1}
+.wordmark{font-family:var(--fd);font-size:clamp(52px,11vw,86px);line-height:1;letter-spacing:-.01em}
+.wordmark em{font-style:italic;color:var(--accent-2)}
+.login .tag{color:var(--rail-ink-2);font-size:14px;letter-spacing:.14em;margin-top:14px;text-transform:uppercase}
+.login .ask{margin-top:48px;margin-bottom:18px;font-size:14.5px;color:var(--rail-ink-2)}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:14px;width:100%;max-width:700px}
+.rolecard{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);
+  padding:20px 18px;text-align:left;color:var(--rail-ink);transition:transform .16s,border-color .16s,background .16s}
+.rolecard:hover{background:rgba(255,255,255,.08);border-color:var(--accent-2);transform:translateY(-3px)}
+.rolecard .ri{width:34px;height:34px;border-radius:10px;background:var(--rail-3);display:grid;place-items:center;margin-bottom:13px}
+.rolecard .ri svg{width:17px;height:17px;stroke:var(--accent-2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.rolecard h3{font-size:16.5px;font-weight:600;margin-bottom:4px}
+.rolecard p{font-size:12.5px;color:var(--rail-ink-2);line-height:1.6}
+.login .fine{margin-top:26px;font-size:12px;color:var(--rail-ink-2);text-align:center}
+.login .bottom{position:relative;z-index:1;font-size:11.5px;color:var(--rail-ink-2);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+.lang{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 12px;
+  font-size:12px;color:var(--rail-ink);letter-spacing:.04em}
+.lang:hover{border-color:var(--accent-2)}
+
+/* ============ SHELL ============ */
+.app{display:grid;grid-template-columns:238px minmax(0,1fr);min-height:100svh}
+.rail{background:var(--rail);color:var(--rail-ink);display:flex;flex-direction:column;gap:22px;
+  padding:22px 16px calc(18px + env(safe-area-inset-bottom,0px));
+  padding-top:calc(22px + env(safe-area-inset-top,0px));
+  position:sticky;top:0;height:100svh;overflow-y:auto}
+.rmark{display:flex;align-items:baseline;gap:9px}
+.rmark .w{font-family:var(--fd);font-size:27px;line-height:1}
+.rmark .w em{font-style:italic;color:var(--accent-2)}
+.rmark .v{font-size:10px;color:var(--rail-ink-2);letter-spacing:.1em}
+.rclinic{font-size:12px;color:var(--rail-ink-2);margin-top:5px;overflow-wrap:anywhere}
+.rolebox{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:10px 12px}
+.rolebox .lb{font-size:10px;letter-spacing:.1em;color:var(--rail-ink-2);text-transform:uppercase}
+.rolesel{width:100%;background:transparent;border:0;color:var(--rail-ink);font-size:14px;font-weight:600;padding:3px 0 0;cursor:pointer}
+.rolesel option{color:#111;background:#fff}
+nav{display:flex;flex-direction:column;gap:2px;flex:1;min-height:0}
+.nb{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:0;
+  padding:9px 11px;border-radius:10px;color:var(--rail-ink-2);font-size:13.5px;white-space:nowrap}
+.nb:hover{background:var(--rail-2);color:var(--rail-ink)}
+.nb[aria-selected="true"]{background:var(--rail-3);color:#fff;font-weight:600}
+.nb .ic{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nb .bdg{margin-left:auto;background:var(--alert);color:#fff;font-size:10.5px;font-weight:700;border-radius:999px;padding:0 6px;line-height:17px}
+.rtools{display:flex;flex-direction:column;gap:4px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}
+.rt{display:flex;align-items:center;gap:9px;background:none;border:0;padding:7px 11px;border-radius:9px;
+  color:var(--rail-ink-2);font-size:12.5px;text-align:left;width:100%}
+.rt:hover{background:var(--rail-2);color:var(--rail-ink)}
+.rt .ic{width:15px;height:15px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.rfoot{font-size:10.5px;color:var(--rail-ink-2);line-height:1.75;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}
+.rfoot b{color:var(--rail-ink);font-weight:600}
+
+.main{min-width:0;padding:clamp(20px,2.6vw,34px) clamp(16px,2.6vw,36px) 56px;display:flex;flex-direction:column}
+.view{display:flex;flex-direction:column;gap:18px;min-width:0}
+.vh{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:2px}
+.vh h1{font-family:var(--fd);font-size:clamp(26px,3.3vw,34px);line-height:1.15;letter-spacing:-.01em}
+.vh .sub{margin-top:5px;color:var(--ink-2);font-size:13.5px;max-width:64ch}
+.vh .right{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stamp{font-size:12px;color:var(--ink-3);white-space:nowrap}
+
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;height:auto;flex-direction:column;gap:14px}
+  nav{flex-direction:row;overflow-x:auto;gap:6px;flex:none}
+  .nb{width:auto;flex:none;background:var(--rail-2);padding:7px 13px}
+  .nb .ic{display:none}
+  .rtools{flex-direction:row;flex-wrap:wrap}
+  .rt{width:auto;background:var(--rail-2)}
+  .rfoot{display:none}
+  .main{padding-bottom:40px}
+}
+
+/* ============ PRIMITIVES ============ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);min-width:0}
+.card>.ch{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;padding:16px 18px 0}
+.card>.ch h2{font-size:14.5px;font-weight:600;letter-spacing:.01em}
+.card>.ch .hint{font-size:12px;color:var(--ink-3)}
+.card>.cb{padding:14px 18px 18px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g2a{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
+.g2b{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)}
+@media (max-width:980px){.g2a,.g2b{grid-template-columns:minmax(0,1fr)}}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:14px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 17px;
+  display:flex;flex-direction:column;gap:3px;box-shadow:var(--shadow);text-align:left;width:100%}
+.tile:hover{border-color:var(--accent)}
+.tile .lb{font-size:12px;color:var(--ink-2)}
+.tile .vv{font-family:var(--fd);font-size:40px;line-height:1.08;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tile .ft{font-size:11.5px;color:var(--ink-3)}
+.tile.flag{border-color:var(--alert);background:var(--alert-soft)}
+.tile.flag .vv,.tile.flag .lb{color:var(--alert)}
+.tile.flag .ft{color:var(--alert);opacity:.8}
+
+.btn{background:var(--accent);color:var(--on-accent);border:0;border-radius:10px;padding:9px 15px;font-size:13.5px;font-weight:600;white-space:nowrap}
+.btn:hover{background:var(--accent-2)}
+.btn:disabled{opacity:.42;cursor:not-allowed;background:var(--accent)}
+.btn.sec{background:var(--surface-2);color:var(--ink-2);font-weight:500}
+.btn.sec:hover{background:var(--accent-soft);color:var(--accent-ink)}
+.btn.sm{padding:5px 11px;font-size:12.5px;border-radius:8px}
+.btn.blk{width:100%}
+.btn.dim{background:transparent;border:1px solid var(--line);color:var(--ink-2);font-weight:500}
+.btn.dim:hover{border-color:var(--accent);color:var(--accent-ink);background:transparent}
+
+.chip{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.c-new{background:var(--info-soft);color:var(--info)}
+.c-act{background:var(--accent-soft);color:var(--accent-ink)}
+.c-lap{background:var(--warn-soft);color:var(--warn)}
+.c-dor{background:var(--alert-soft);color:var(--alert)}
+.c-vip{background:var(--gold-soft);color:var(--gold);margin-left:5px}
+.c-neu{background:var(--surface-2);color:var(--ink-2)}
+.c-ok{background:var(--accent-soft);color:var(--accent-ink)}
+
+.seg{display:inline-flex;background:var(--surface-2);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{background:none;border:0;border-radius:8px;padding:6px 13px;font-size:12.5px;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:var(--shadow)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.fb{background:var(--surface-2);border:1px solid transparent;border-radius:999px;padding:5px 13px;font-size:12.5px;color:var(--ink-2)}
+.fb:hover{color:var(--ink)}
+.fb[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+.srch{flex:1;min-width:132px;background:var(--surface-3);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-size:13px}
+
+.tw{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:13px}
+.tw.snug table{min-width:0}
+.tw.mid table{min-width:440px}
+thead th{position:sticky;top:0;background:var(--surface-2);color:var(--ink-2);font-weight:600;font-size:11px;
+  letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:9px 13px;white-space:nowrap;
+  border-bottom:1px solid var(--line);z-index:1}
+thead th.srt{cursor:pointer;user-select:none}
+thead th.srt:hover{color:var(--ink)}
+tbody td{padding:10px 13px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tbody tr.ck{cursor:pointer}
+tbody tr:hover td{background:var(--surface-3)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.scr{max-height:424px;overflow-y:auto}
+.empty{color:var(--ink-3);text-align:center;padding:30px 12px}
+input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;vertical-align:-2px}
+.ckc{width:38px}
+
+.note{font-size:12px;color:var(--ink-3);margin-top:9px;line-height:1.7}
+.ta{width:100%;background:var(--surface-3);border:1px solid var(--line);border-radius:12px;padding:12px 13px;
+  font-size:13px;line-height:1.8;resize:vertical;min-height:122px;font-family:var(--fu)}
+.inp{background:var(--surface-3);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13.5px;width:100%}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field label{font-size:12px;color:var(--ink-2)}
+.gg2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+@media (max-width:420px){.gg2{grid-template-columns:1fr}}
+.rowb{display:flex;gap:10px;margin-top:6px}
+.rowb>*{flex:1}
+
+/* todo + alerts */
+.todo{display:flex;flex-direction:column}
+.ti{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-2)}
+.ti:last-child{border-bottom:0}
+.ti .dot{width:8px;height:8px;border-radius:50%;flex:none;background:var(--accent)}
+.ti .dot.w{background:var(--warn)} .ti .dot.a{background:var(--alert)}
+.ti .tx{flex:1;min-width:0;font-size:13.5px}
+.ti .tx b{font-weight:600}
+.ti .tx small{display:block;color:var(--ink-3);font-size:11.5px;margin-top:1px}
+.ti.done .tx{text-decoration:line-through;color:var(--ink-3)}
+.ti.done .dot{background:var(--ink-3)}
+.alerts{display:flex;flex-direction:column;gap:10px}
+.al{display:flex;gap:11px;align-items:flex-start;background:var(--surface-3);border:1px solid var(--line);
+  border-left:3px solid var(--warn);border-radius:0 12px 12px 0;padding:12px 14px}
+.al.a{border-left-color:var(--alert)} .al.g{border-left-color:var(--accent)}
+.al .tx{flex:1;min-width:0;font-size:13px;color:var(--ink-2)}
+.al .tx b{color:var(--ink);display:block;font-size:13.5px;margin-bottom:2px}
+
+.dist{display:flex;gap:3px;height:30px;border-radius:9px;overflow:hidden;margin-bottom:12px}
+.dist span{display:block}
+.dkey{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink-2)}
+.dkey button{background:none;border:0;padding:0;color:inherit;font-size:inherit}
+.dkey button:hover{color:var(--accent-ink)}
+.dkey i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:7px}
+.feed{display:flex;flex-direction:column}
+.fi{display:flex;gap:11px;padding:10px 0;border-bottom:1px solid var(--line-2);font-size:12.5px}
+.fi:last-child{border-bottom:0}
+.fd{width:7px;height:7px;border-radius:50%;margin-top:7px;flex:none;background:var(--accent)}
+.fd.w{background:var(--warn)} .fd.i{background:var(--info)}
+.fi .tx{color:var(--ink-2);min-width:0}
+.fi .tx b{color:var(--ink);font-weight:600}
+.fi .ago{margin-left:auto;color:var(--ink-3);font-size:11.5px;white-space:nowrap;flex:none}
+.mstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:12px;margin-top:16px;
+  border-top:1px solid var(--line-2);padding-top:14px}
+.ms{display:flex;flex-direction:column;gap:1px;min-width:0}
+.ms .k{font-size:11.5px;color:var(--ink-3);line-height:1.4}
+.ms .v{font-family:var(--fd);font-size:23px;line-height:1.15}
+.grid.g2b>.card,.grid.g2a>.card{align-self:start}
+/* calendar */
+.week{display:grid;grid-template-columns:repeat(7,minmax(126px,1fr));gap:9px;overflow-x:auto;padding-bottom:6px}
+.day{background:var(--surface-3);border:1px solid var(--line);border-radius:13px;padding:10px;min-height:206px;
+  display:flex;flex-direction:column;gap:7px}
+.day.today{border-color:var(--accent);background:var(--accent-soft)}
+.day h3{font-size:11.5px;color:var(--ink-2);display:flex;justify-content:space-between;align-items:baseline;gap:4px;font-weight:600}
+.day h3 em{font-style:normal;font-size:10.5px;color:var(--ink-3);font-weight:400}
+.ap{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:9px;
+  padding:7px 9px;font-size:12px;display:flex;flex-direction:column;gap:1px;text-align:left;width:100%}
+.ap:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.ap.pend{border-left-color:var(--warn)}
+.ap.done{opacity:.5;border-left-color:var(--ink-3)}
+.ap.canc{opacity:.45;border-left-color:var(--alert)}
+.ap.canc .nm{text-decoration:line-through}
+.ap .t{font-variant-numeric:tabular-nums;color:var(--ink-2);font-size:11px}
+.ap .nm{font-weight:600}
+.ap .w{font-size:10.5px;color:var(--ink-3)}
+.memo{margin-top:auto;background:transparent;border:1px dashed var(--line);border-radius:8px;padding:5px 7px;
+  font-size:11px;color:var(--ink-2);width:100%;resize:none;min-height:34px;font-family:var(--fu)}
+.memo:focus{border-style:solid;border-color:var(--accent);background:var(--surface)}
+.lgd{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:11.5px;color:var(--ink-3);margin-top:12px;align-items:center}
+.lgd i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:baseline}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(14,20,18,.55);z-index:55;backdrop-filter:blur(2px)}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(100%,452px);background:var(--surface);
+  border-left:1px solid var(--line);box-shadow:var(--shadow-lg);z-index:60;overflow-y:auto;
+  padding:0 0 calc(26px + env(safe-area-inset-bottom,0px))}
+.dtop{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);z-index:2;
+  padding:calc(20px + env(safe-area-inset-top,0px)) 22px 0}
+.dhd{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.dhd h2{font-family:var(--fd);font-size:27px;line-height:1.15}
+.dhd .meta{font-size:12.5px;color:var(--ink-3);margin-top:3px}
+.xb{background:var(--surface-2);border:0;width:30px;height:30px;border-radius:9px;color:var(--ink-2);font-size:15px;line-height:1;flex:none}
+.xb:hover{background:var(--accent-soft);color:var(--accent-ink)}
+.dtabs{display:flex;gap:2px;margin-top:14px;overflow-x:auto}
+.dtabs button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 11px;font-size:13px;
+  color:var(--ink-3);white-space:nowrap}
+.dtabs button[aria-selected="true"]{color:var(--accent-ink);border-bottom-color:var(--accent);font-weight:600}
+.dbody{padding:18px 22px 0}
+.dsec{margin-bottom:20px}
+.dsec h3{font-size:11px;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase;margin-bottom:9px}
+.kv{display:grid;grid-template-columns:82px minmax(0,1fr);gap:7px 12px;font-size:13px}
+.kv dt{color:var(--ink-3)} .kv dd{margin:0;overflow-wrap:anywhere}
+.tl{display:flex;flex-direction:column;border-left:2px solid var(--line);padding-left:15px;margin-left:5px}
+.tl div{position:relative;padding:6px 0;font-size:12.5px;color:var(--ink-2)}
+.tl div::before{content:"";position:absolute;left:-20px;top:13px;width:7px;height:7px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 0 3px var(--surface)}
+.tl div b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
+.tagrow{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.tagx{background:var(--surface-2);border:0;border-radius:999px;padding:3px 10px;font-size:11.5px;color:var(--ink-2)}
+.tagx:hover{background:var(--alert-soft);color:var(--alert)}
+.cns{display:flex;flex-direction:column;gap:9px}
+.cnr{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;
+  background:var(--surface-3);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.sw{position:relative;width:38px;height:21px;flex:none;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:999px;transition:background .18s,border-color .18s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:var(--ink-3);transition:transform .18s,background .18s}
+.sw[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.sw[aria-checked="true"]::after{transform:translateX(17px);background:#fff}
+.sw:disabled{opacity:.45;cursor:not-allowed}
+.pkg{background:var(--surface-3);border:1px solid var(--line);border-radius:12px;padding:14px}
+.pkgbar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin:9px 0 7px}
+.pkgbar span{display:block;height:100%;background:var(--accent);border-radius:999px}
+.dact{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:13px 22px;
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.dact .btn{flex:1;min-width:104px}
+
+/* rules + compliance */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(262px,1fr));gap:14px}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 16px;
+  display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);text-align:left}
+.rule.off{opacity:.6}
+.rule .tp{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.rule .nm{font-size:14px;font-weight:600}
+.rule .mt{font-size:12.5px;color:var(--ink-2);line-height:1.75}
+.rule .st{font-size:11.5px;color:var(--ink-3);border-top:1px dashed var(--line);padding-top:8px;margin-top:2px}
+.rule .st b{color:var(--ink-2)}
+.cmp{display:flex;flex-direction:column;gap:8px}
+.cmpr{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink-2)}
+.cmpr .mk{flex:none;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;font-size:10px;margin-top:2px}
+.cmpr.ok .mk{background:var(--accent-soft);color:var(--accent-ink)}
+.cmpr.no .mk{background:var(--warn-soft);color:var(--warn)}
+
+/* reviews */
+.rvs{display:flex;flex-direction:column;gap:12px}
+.rv{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:var(--shadow)}
+.rv.low{border-left:3px solid var(--alert)}
+.rvh{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:7px}
+.stars{color:var(--gold);letter-spacing:2px;font-size:14px}
+.stars .off{color:var(--ink-3);opacity:.45}
+.rv p.body{font-size:13.5px;color:var(--ink-2);line-height:1.8}
+.rvrep{background:var(--surface-3);border-left:2px solid var(--accent);border-radius:0 10px 10px 0;
+  padding:9px 12px;margin-top:10px;font-size:12.5px;color:var(--ink-2)}
+.rvrep b{color:var(--ink)}
+
+/* charts */
+.hb{display:flex;flex-direction:column;gap:10px}
+.hbr{display:grid;grid-template-columns:82px minmax(0,1fr) 46px;align-items:center;gap:11px;font-size:12.5px}
+.hbr .tk{display:block;background:var(--surface-2);border-radius:5px;height:17px;overflow:hidden}
+.hbr .fl{display:block;height:100%;background:var(--chart-1);border-radius:0 5px 5px 0;transition:width .5s ease}
+.hbr .vv{text-align:right;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.grp{display:flex;align-items:flex-end;gap:clamp(5px,1.8vw,15px);height:184px;padding-top:6px;border-bottom:1px solid var(--line)}
+.gc{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;height:100%;min-width:0}
+.gp{display:flex;align-items:flex-end;gap:2px;width:100%;flex:1 1 auto;min-height:0;justify-content:center}
+.gb{width:clamp(8px,3vw,18px);border-radius:4px 4px 0 0;transition:height .5s ease}
+.gb.s1{background:var(--chart-1)} .gb.s2{background:var(--chart-2)}
+.gv{font-size:10.5px;line-height:1;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.gv.hi{color:var(--ink);font-weight:700}
+.gax{display:flex;gap:clamp(5px,1.8vw,15px);margin-top:8px}
+.gax span{flex:1;text-align:center;font-size:11px;color:var(--ink-3)}
+.lg{display:flex;flex-wrap:wrap;gap:15px;font-size:12px;color:var(--ink-2);margin-bottom:12px}
+.lg i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:7px}
+.fun{display:flex;flex-direction:column;gap:9px}
+.fnr{display:grid;grid-template-columns:96px minmax(0,1fr) 78px;align-items:center;gap:11px;font-size:12.5px}
+.fnr .tk{display:block;background:var(--surface-2);border-radius:6px;height:26px;overflow:hidden}
+.fnr .fl{display:flex;align-items:center;justify-content:flex-end;height:100%;background:var(--chart-1);
+  border-radius:0 6px 6px 0;padding-right:9px;color:#fff;font-size:11.5px;font-weight:600;transition:width .5s}
+.fnr .rt{text-align:right;color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:11.5px}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:5px 10px;
+  border-radius:8px;white-space:nowrap;z-index:70;opacity:0;transition:opacity .12s;font-variant-numeric:tabular-nums}
+.tip.on{opacity:1}
+.tak{background:var(--surface-3);border-left:3px solid var(--accent);border-radius:0 12px 12px 0;
+  padding:13px 16px;font-size:13px;color:var(--ink-2);line-height:1.8}
+.tak b{color:var(--ink)}
+
+/* modal + toast */
+.sheet{position:fixed;inset:0;background:rgba(14,20,18,.55);display:grid;place-items:center;padding:16px;z-index:65;backdrop-filter:blur(2px)}
+.sheet>div{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;
+  width:min(100%,460px);box-shadow:var(--shadow-lg);max-height:88svh;overflow-y:auto}
+.sheet h2{font-family:var(--fd);font-size:24px;line-height:1.2;margin-bottom:6px}
+.sheet .lead{color:var(--ink-2);font-size:13px;margin-bottom:16px;line-height:1.75}
+.sheet.wide>div{width:min(100%,560px)}
+.mhd{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:var(--warn-soft);color:var(--warn);
+  font-size:11px;font-weight:700;letter-spacing:.05em;padding:3px 9px;border-radius:999px}
+.badge::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+.abgrid{display:grid;gap:10px;margin:4px 0 16px}
+.abr{display:flex;gap:11px;font-size:13px;color:var(--ink-2);line-height:1.7}
+.abr .n{font-family:var(--fd);font-size:16px;color:var(--accent);line-height:1.3;flex:none;width:19px}
+.abr b{color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:13px;z-index:80;
+  opacity:0;transition:opacity .2s;pointer-events:none;max-width:88vw;text-align:center}
+.toast.on{opacity:1}
+.pv{background:var(--surface-3);border:1px solid var(--line);border-radius:12px;padding:13px 14px;
+  white-space:pre-wrap;font-size:13px;line-height:1.85;color:var(--ink);text-align:left}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<!-- ================= LOGIN ================= -->
+<div class="login" id="login">
+  <div class="top">
+    <span class="badge" data-t="demoTag"></span>
+    <button class="lang" id="langLogin">中文 / EN</button>
+  </div>
+  <div class="mid">
+    <div class="wordmark">Re<em>visit</em></div>
+    <div class="tag" data-t="brandSub"></div>
+    <div class="ask" data-t="loginAsk"></div>
+    <div class="roles" id="roleCards"></div>
+    <div class="fine" data-t="loginFine"></div>
+  </div>
+  <div class="bottom">
+    <span data-t="footLegal"></span>
+    <span data-t="footBy"></span>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div class="app" id="app" hidden>
+  <aside class="rail">
+    <div>
+      <div class="rmark"><span class="w">Re<em>visit</em></span><span class="v">v1.0</span></div>
+      <div class="rclinic" id="railClinic"></div>
+    </div>
+
+    <div class="rolebox">
+      <div class="lb" data-t="roleLabel"></div>
+      <select class="rolesel" id="roleSel" aria-label="role"></select>
+    </div>
+
+    <nav id="nav" role="tablist"></nav>
+
+    <div class="rtools">
+      <button class="rt" id="btnAbout"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.2"/></svg><span data-t="about"></span></button>
+      <button class="rt" id="btnLang"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3a16 16 0 0 1 0 18A16 16 0 0 1 12 3z"/></svg><span>中文 / English</span></button>
+      <button class="rt" id="btnSet"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 14.5a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.1-2.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.7-1.1V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg><span data-t="setTitle"></span></button>
+      <button class="rt" id="btnTheme"><svg class="ic" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg><span data-t="theme"></span></button>
+      <button class="rt" id="btnReset"><svg class="ic" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 2.5 5.8"/><path d="M4 18v-5h5"/></svg><span data-t="reset"></span></button>
+      <button class="rt" id="btnExit"><svg class="ic" viewBox="0 0 24 24"><path d="M14 4h4a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 18 20h-4M10 16l-4-4 4-4M6.5 12H15"/></svg><span data-t="exit"></span></button>
+    </div>
+
+    <div class="rfoot"><b>Revisit</b> · <span data-t="footByShort"></span><br><span data-t="footRepo"></span></div>
+  </aside>
+
+  <main class="main">
+    <!-- ===== 总览 ===== -->
+    <section class="view" id="v-ov" hidden>
+      <div class="vh">
+        <div><h1 data-t="ovTitle"></h1><p class="sub" data-t="ovSub"></p></div>
+        <span class="stamp" id="ovStamp"></span>
+      </div>
+      <div class="tiles" id="ovTiles"></div>
+      <div class="grid g2a">
+        <div class="card"><div class="ch"><h2 data-t="todoTitle"></h2><span class="hint" id="todoLeft"></span></div>
+          <div class="cb"><div class="todo" id="todoList"></div></div></div>
+        <div class="card"><div class="ch"><h2 data-t="alertTitle"></h2><span class="hint" data-t="alertHint"></span></div>
+          <div class="cb"><div class="alerts" id="alertList"></div></div></div>
+      </div>
+      <div class="grid g2b">
+        <div class="card"><div class="ch"><h2 data-t="distTitle"></h2><span class="hint" data-t="distHint"></span></div>
+          <div class="cb"><div class="dist" id="distBar"></div><div class="dkey" id="distKey"></div><div class="mstats" id="distMini"></div></div></div>
+        <div class="card"><div class="ch"><h2 data-t="todayTitle"></h2><span class="hint" data-t="todayHint"></span></div>
+          <div class="cb"><div class="tw snug"><table id="tTodayAp"><thead></thead><tbody></tbody></table></div></div></div>
+      </div>
+      <div class="card"><div class="ch"><h2 data-t="feedTitle"></h2><span class="hint" data-t="feedHint"></span></div>
+        <div class="cb"><div class="feed" id="feedList"></div></div></div>
+    </section>
+
+    <!-- ===== 预约 ===== -->
+    <section class="view" id="v-ap" hidden>
+      <div class="vh">
+        <div><h1 data-t="apTitle"></h1><p class="sub" data-t="apSub"></p></div>
+        <div class="right">
+          <select class="inp" id="docFilter" style="width:auto" aria-label="doctor"></select>
+          <button class="btn" id="btnNewAppt"></button>
+        </div>
+      </div>
+      <div class="card"><div class="cb">
+        <div class="week" id="week"></div>
+        <div class="lgd" id="apLegend"></div>
+      </div></div>
+    </section>
+
+    <!-- ===== 客户 ===== -->
+    <section class="view" id="v-cl" hidden>
+      <div class="vh">
+        <div><h1 data-t="clTitle"></h1><p class="sub" data-t="clSub"></p></div>
+        <span class="stamp" id="clCount"></span>
+      </div>
+      <div class="card"><div class="cb">
+        <div class="filters" id="clFilters"></div>
+        <div class="filters" id="clBulk" hidden></div>
+        <div class="tw scr"><table id="tClients"><thead></thead><tbody></tbody></table></div>
+        <p class="note" data-t="clNote"></p>
+      </div></div>
+    </section>
+
+    <!-- ===== 召回 ===== -->
+    <section class="view" id="v-rc" hidden>
+      <div class="vh">
+        <div><h1 data-t="rcTitle"></h1><p class="sub" data-t="rcSub"></p></div>
+      </div>
+      <div class="grid g2a">
+        <div class="card"><div class="cb">
+          <div class="filters"><div class="seg" id="rcChan"></div></div>
+          <div class="filters" id="rcSeg"></div>
+          <div class="tak" id="rcStats" style="margin-bottom:14px"></div>
+          <div class="tw mid scr"><table id="tRecall"><thead></thead><tbody></tbody></table></div>
+        </div></div>
+        <div class="card"><div class="cb">
+          <h2 style="font-size:14.5px;font-weight:600;margin-bottom:10px" id="rcTplTitle"></h2>
+          <textarea class="ta" id="rcMsg" aria-label="message"></textarea>
+          <p class="note" data-t="rcTplNote"></p>
+          <div class="tak" id="rcEst" style="margin-top:12px"></div>
+          <div class="rowb"><button class="btn sec" id="btnPreview"></button><button class="btn" id="btnSend"></button></div>
+          <p class="note" id="rcQuiet"></p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- ===== 自动化 ===== -->
+    <section class="view" id="v-au" hidden>
+      <div class="vh">
+        <div><h1 data-t="auTitle"></h1><p class="sub" data-t="auSub"></p></div>
+        <span class="stamp" id="auStamp"></span>
+      </div>
+      <div class="card"><div class="ch"><h2 data-t="cmpTitle"></h2><span class="hint" data-t="cmpHint"></span></div>
+        <div class="cb"><div class="cmp" id="cmpList"></div></div></div>
+      <div class="rules" id="rulesGrid"></div>
+      <div class="card"><div class="ch"><h2 data-t="blastTitle"></h2><span class="hint" data-t="blastHint"></span></div>
+        <div class="cb">
+          <div class="filters" id="blFilters"></div>
+          <textarea class="ta" id="blMsg" aria-label="campaign"></textarea>
+          <div class="rowb" style="align-items:center">
+            <span class="note" style="margin:0" id="blCount"></span>
+            <button class="btn" id="btnBlast" style="flex:0 0 auto"></button>
+          </div>
+        </div></div>
+    </section>
+
+    <!-- ===== 评价 ===== -->
+    <section class="view" id="v-rv" hidden>
+      <div class="vh">
+        <div><h1 data-t="rvTitle"></h1><p class="sub" data-t="rvSub"></p></div>
+        <button class="btn" id="btnInvite"></button>
+      </div>
+      <div class="tiles" id="rvTiles"></div>
+      <div class="card"><div class="cb">
+        <div class="filters" id="rvFilters"></div>
+        <div class="rvs" id="rvList"></div>
+      </div></div>
+    </section>
+
+    <!-- ===== 报表 ===== -->
+    <section class="view" id="v-rp" hidden>
+      <div class="vh">
+        <div><h1 data-t="rpTitle"></h1><p class="sub" data-t="rpSub"></p></div>
+        <div class="seg" id="rangeSeg"></div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="ch"><h2 data-t="srcTitle"></h2><span class="hint" id="srcHint"></span></div>
+          <div class="cb"><div class="hb" id="srcChart"></div></div></div>
+        <div class="card"><div class="ch"><h2 data-t="trendTitle"></h2><span class="hint" data-t="demoData"></span></div>
+          <div class="cb"><div class="lg" id="trendLg"></div><div class="grp" id="trendChart"></div>
+            <div class="gax" id="trendAxis"></div><p class="note" id="trendNote"></p></div></div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="ch"><h2 data-t="funTitle"></h2><span class="hint" data-t="funHint"></span></div>
+          <div class="cb"><div class="fun" id="funChart"></div></div></div>
+        <div class="card"><div class="ch"><h2 data-t="qualTitle"></h2><span class="hint" data-t="qualHint"></span></div>
+          <div class="cb"><div class="tw mid"><table id="tQual"><thead></thead><tbody></tbody></table></div></div></div>
+      </div>
+      <div class="card"><div class="ch"><h2 data-t="effTitle"></h2><span class="hint" data-t="effHint"></span></div>
+        <div class="cb"><div class="tw"><table id="tEff"><thead></thead><tbody></tbody></table></div></div></div>
+      <div class="tak" id="rpTake"></div>
+    </section>
+
+    <footer class="note" style="margin-top:34px;border-top:1px solid var(--line);padding-top:16px">
+      <span data-t="footLegal"></span><br><b>Revisit</b> · <span data-t="footBy"></span> · <span data-t="footRepo"></span>
+    </footer>
+  </main>
+</div>
+
+<div class="tip" id="tip" role="status"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div id="drawerWrap" hidden>
+  <div class="scrim" id="drawerScrim"></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-label="client"></aside>
+</div>
+
+<div class="sheet" id="mAbout" hidden><div>
+  <div class="mhd"><h2>Re<em style="font-family:var(--fd);font-style:italic;color:var(--accent)">visit</em></h2>
+    <button class="xb" data-close="mAbout">✕</button></div>
+  <p class="lead" id="aboutLead"></p>
+  <div class="abgrid" id="aboutRows"></div>
+  <div class="tak" id="aboutWarn" style="margin-bottom:16px"></div>
+  <button class="btn blk" data-close="mAbout" id="aboutOk"></button>
+</div></div>
+
+<div class="sheet" id="mSet" hidden><div>
+  <h2 data-t="setTitle"></h2><p class="lead" data-t="setLead"></p>
+  <div class="field"><label for="iClinic" data-t="setClinic"></label><input class="inp" id="iClinic" maxlength="24"></div>
+  <div class="gg2">
+    <div class="field"><label for="iDoc" data-t="setDoc"></label><input class="inp" id="iDoc" maxlength="16"></div>
+    <div class="field"><label for="iPhone" data-t="setPhone"></label><input class="inp" id="iPhone" maxlength="24"></div>
+  </div>
+  <p class="note" style="margin-top:0" data-t="setNote"></p>
+  <div class="rowb"><button class="btn" id="saveSet"></button><button class="btn sec" data-close="mSet"></button></div>
+</div></div>
+
+<div class="sheet" id="mAppt" hidden><div>
+  <div class="mhd"><h2 id="apmTitle"></h2><button class="xb" data-close="mAppt">✕</button></div>
+  <p class="lead" id="apmLead"></p>
+  <div id="apmBody"></div>
+</div></div>
+
+<div class="sheet" id="mNewAp" hidden><div>
+  <h2 data-t="naTitle"></h2><p class="lead" data-t="naLead"></p>
+  <div class="field"><label for="naClient" data-t="naClient"></label><select class="inp" id="naClient"></select></div>
+  <div class="gg2">
+    <div class="field"><label for="naDay" data-t="naDay"></label><select class="inp" id="naDay"></select></div>
+    <div class="field"><label for="naTime" data-t="naTime"></label><select class="inp" id="naTime"></select></div>
+    <div class="field"><label for="naSvc" data-t="naSvc"></label><select class="inp" id="naSvc"></select></div>
+    <div class="field"><label for="naWay" data-t="naWay"></label><select class="inp" id="naWay"></select></div>
+  </div>
+  <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink-2);margin-bottom:6px">
+    <input type="checkbox" id="naSms" checked><span data-t="naSms"></span></label>
+  <div class="rowb"><button class="btn" id="saveNa"></button><button class="btn sec" data-close="mNewAp"></button></div>
+</div></div>
+
+<div class="sheet" id="mNewCl" hidden><div>
+  <h2 data-t="ncTitle"></h2><p class="lead" data-t="ncLead"></p>
+  <div class="gg2">
+    <div class="field"><label for="ncName" data-t="ncName"></label><input class="inp" id="ncName" maxlength="24"></div>
+    <div class="field"><label for="ncPhone" data-t="ncPhone"></label><input class="inp" id="ncPhone" maxlength="20" placeholder="650-555-0100"></div>
+    <div class="field"><label for="ncSrc" data-t="ncSrc"></label><select class="inp" id="ncSrc"></select></div>
+    <div class="field"><label for="ncSvc" data-t="ncSvc"></label><select class="inp" id="ncSvc"></select></div>
+  </div>
+  <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink-2);margin-bottom:6px">
+    <input type="checkbox" id="ncSms" checked><span data-t="ncSms"></span></label>
+  <div class="rowb"><button class="btn" id="saveNc"></button><button class="btn sec" data-close="mNewCl"></button></div>
+</div></div>
+
+<div class="sheet" id="mRule" hidden><div>
+  <div class="mhd"><h2 id="ruTitle"></h2><button class="xb" data-close="mRule">✕</button></div>
+  <p class="lead" id="ruLead"></p>
+  <div class="gg2">
+    <div class="field"><label for="ruDays" data-t="ruDays"></label><input class="inp" id="ruDays" type="number" min="0" max="400"></div>
+    <div class="field"><label for="ruChan" data-t="ruChan"></label><select class="inp" id="ruChan"></select></div>
+  </div>
+  <div class="field"><label for="ruMsg" data-t="ruMsg"></label><textarea class="ta" id="ruMsg" style="min-height:96px"></textarea></div>
+  <div class="rowb"><button class="btn" id="saveRu"></button><button class="btn sec" data-close="mRule"></button></div>
+</div></div>
+
+<div class="sheet wide" id="mInfo" hidden><div>
+  <div class="mhd"><h2 id="infoTitle"></h2><button class="xb" data-close="mInfo">✕</button></div>
+  <div id="infoBody" style="margin-bottom:18px"></div>
+  <button class="btn blk" data-close="mInfo" id="infoOk"></button>
+</div></div>
+<script>
+(function(){
+"use strict";
+/* ---------------- i18n ---------------- */
+var L={
+demoTag:["演示版 · 数据为示例","DEMO · SAMPLE DATA"],
+brandSub:["诊所客户管理系统","CLINIC CRM"],
+loginAsk:["选择身份进入演示","Choose a role to enter the demo"],
+loginFine:["演示账号已预填，无需密码。所有数据均为虚构示例。","Demo accounts are pre-filled — no password needed. All data is fictional."],
+footLegal:["本页为功能演示，所有姓名、电话、数据均为虚构，电话为 555 测试号段，无法接通。","Functional demo. All names, numbers and data are fictional; phone numbers use the 555 test range and cannot be dialed."],
+footBy:["Demo by Ryan Yan","Demo by Ryan Yan"],
+footByShort:["Demo by Ryan Yan","Demo by Ryan Yan"],
+footRepo:["源码与联系方式见 GitHub 项目主页","Source & contact on the GitHub project page"],
+roleLabel:["当前身份","Signed in as"],
+about:["关于本演示","About this demo"],theme:["深色 / 浅色","Dark / Light"],
+reset:["重置演示数据","Reset demo data"],exit:["退出登录","Sign out"],
+rFront:["前台","Front Desk"],rMkt:["营销","Marketing"],rOwner:["老板","Owner"],
+rFrontD:["日历、客户建档、日常接待","Calendar, client records, daily reception"],
+rMktD:["客户名单、召回、群发、报表","Lists, win-back, campaigns, reports"],
+rOwnerD:["全部权限，含规则与报表","Full access including rules and reports"],
+nav_ov:["总览","Dashboard"],nav_ap:["预约","Appointments"],nav_cl:["客户","Clients"],
+nav_rc:["召回","Win-back"],nav_au:["自动化","Automation"],nav_rv:["评价","Reviews"],nav_rp:["报表","Reports"],
+ovTitle:["今日总览","Today"],ovSub:["系统每天自动算出该做什么、谁需要跟进，前台不用翻记录。","The system works out what needs doing today, so nobody has to dig through records."],
+todoTitle:["今日待办","Today's tasks"],todoLeft:["还剩 {n} 项","{n} left"],todoDone:["今天的事都做完了","All done for today"],
+alertTitle:["重点提醒","Needs a decision"],alertHint:["需要你拿主意的事","Things only you can decide"],
+distTitle:["客户活跃度分布","Client activity"],distHint:["按最后一次到店时间自动划分","Auto-segmented by last visit"],
+todayTitle:["今日预约","Today's appointments"],todayHint:["电话 · 网上 · 前台同一张表","Phone, online and walk-in in one place"],
+feedTitle:["最近动态","Recent activity"],feedHint:["系统自动记录","Logged automatically"],
+apTitle:["预约日历","Appointments"],apSub:["三种预约方式进同一张日历。点任意预约可以确认、改期、取消或发提醒。","All booking channels land on one calendar. Click any appointment to confirm, reschedule, cancel or send a reminder."],
+clTitle:["客户档案","Clients"],clSub:["每位客户一条记录，标签由系统按到店时间自动判断。点一行打开完整档案。","One record per client, auto-tagged by last visit. Click a row to open the full file."],
+clNote:["演示数据：姓名、电话均为虚构。系统只保存联系方式和到店日期，不保存任何病情、诊断或保险信息。","Demo data. The system stores contact details and visit dates only — never conditions, diagnoses or insurance records."],
+rcTitle:["流失召回","Win-back"],rcSub:["系统自动找出超过 90 天没来的客户，并按渠道同意情况过滤出真正能发的人。","The system finds clients who haven't returned in 90+ days, then filters by who has actually consented to each channel."],
+rcTplNote:["{姓名} 会自动替换成每位客户的名字。未同意接收的客户已被系统排除。","{name} is replaced with each client's name. Clients who haven't opted in are excluded automatically."],
+auTitle:["营销自动化","Automation"],auSub:["规则设一次，之后系统自己跑。开关受身份权限控制。","Set the rules once and the system runs them. Switches are gated by role."],
+cmpTitle:["合规检查","Compliance check"],cmpHint:["医疗营销必须过的几道线","The lines medical marketing has to stay inside"],
+blastTitle:["手动群发","Manual campaign"],blastHint:["按标签选人，适合节气内容和活动通知","Pick an audience by tag — seasonal content, event notices"],
+rvTitle:["评价管理","Reviews"],rvSub:["就诊后自动邀评，低分评价单独预警，回复可套用模板。","Review invites go out automatically; low ratings are flagged on their own and replies can use a template."],
+rpTitle:["数据报表","Reports"],rpSub:["四个问题：客户从哪来、哪个渠道留得住、客户在哪一步流失、营销到底带回多少人。","Four questions: where clients come from, which channels keep them, where they drop off, and what marketing actually brings back."],
+srcTitle:["客户来源分布","Client sources"],trendTitle:["到店与新客趋势","Visits and new clients"],demoData:["演示数据","Sample data"],
+funTitle:["复诊漏斗","Repeat-visit funnel"],funHint:["客户在哪一步停下来","Where clients stop coming back"],
+qualTitle:["各渠道质量对比","Channel quality"],qualHint:["不只看来了多少人，还看谁留得住","Not just volume — who actually stays"],
+effTitle:["营销效果","Campaign results"],effHint:["发出去的消息，带回了多少人","What the messages actually brought back"],
+setTitle:["演示设置","Demo settings"],setLead:["改成对方诊所的名称，整份演示会跟着变。只影响显示，不保存任何数据。","Change the clinic name and the whole demo follows. Display only — nothing is stored."],
+setClinic:["诊所名称","Clinic name"],setDoc:["主诊医生","Lead practitioner"],setPhone:["诊所电话","Clinic phone"],
+setNote:["诊所电话只用于短信模板。本演示不会显示任何真实联系方式。","The clinic phone is only used in message templates. This demo shows no real contact details."],
+naTitle:["新增预约","New appointment"],naLead:["演示：新预约会直接出现在日历上。","Demo: the appointment appears on the calendar right away."],
+naClient:["客户","Client"],naDay:["日期","Day"],naTime:["时间","Time"],naSvc:["项目","Service"],naWay:["预约方式","Channel"],
+naSms:["同时发送确认短信","Also send a confirmation text"],
+ncTitle:["新增客户","New client"],ncLead:["演示：新客户会立刻出现在客户档案里，标签自动打成「新客」。","Demo: the client appears immediately, auto-tagged as new."],
+ncName:["姓名","Name"],ncPhone:["电话","Phone"],ncSrc:["来源","Source"],ncSvc:["首次项目","First service"],
+ncSms:["客户已同意接收短信","Client has opted in to text messages"],
+ruDays:["触发天数","Trigger (days)"],ruChan:["发送渠道","Channel"],ruMsg:["消息内容","Message"],
+save:["保存","Save"],cancel:["取消","Cancel"],apply:["应用","Apply"],ok:["知道了","Got it"],
+sms:["短信","Text"],email:["邮件","Email"],wechat:["微信","WeChat"],
+st_new:["新客","New"],st_act:["活跃","Active"],st_lap:["流失","Lapsed"],st_dor:["沉睡","Dormant"],vip:["VIP","VIP"],
+all:["全部","All"],search:["搜索姓名或电话","Search name or phone"],
+th_name:["姓名","Name"],th_phone:["电话","Phone"],th_last:["最后到店","Last visit"],th_days:["距今","Days"],
+th_visits:["到店次数","Visits"],th_src:["来源","Source"],th_consent:["同意","Consent"],th_status:["状态","Status"],
+th_time:["时间","Time"],th_client:["客户","Client"],th_svc:["项目","Service"],th_chan:["方式","Channel"],th_state:["状态","Status"],
+th_count:["客户数","Clients"],th_avg:["平均到店","Avg"],th_active:["仍活跃","Active"],th_rate:["活跃占比","Rate"],
+th_rule:["规则","Rule"],th_sent:["发送","Sent"],th_reply:["回复","Replies"],th_booked:["带回预约","Bookings"],th_conv:["转化率","Conversion"],
+tl_total:["客户总数","Total clients"],tl_total_f:["系统内全部建档客户","All client records"],
+tl_30:["近 30 天到店","Visits, last 30 days"],tl_30_f:["其中新客 {n} 人","{n} of them new"],
+tl_recall:["需要召回","Needs win-back"],tl_recall_f:["超过 90 天没有再来","No visit in 90+ days"],
+tl_repeat:["复诊率","Repeat rate"],tl_repeat_f:["到店 2 次以上的客户占比","Clients with 2+ visits"],
+addClient:["＋ 新增客户","+ New client"],newAppt:["＋ 新增预约","+ New appointment"],
+bulkTag:["批量加标签","Tag selected"],bulkSend:["批量群发","Message selected"],selN:["已选 {n} 位","{n} selected"],clear:["清除","Clear"],
+allDoctors:["全部医师","All practitioners"],
+ap_pend:["待确认","Pending"],ap_conf:["已确认","Confirmed"],ap_done:["已完成","Completed"],ap_canc:["已取消","Cancelled"],
+memoPh:["本日备忘…","Day note…"],
+apConfirm:["确认预约","Confirm"],apResched:["改期","Reschedule"],apComplete:["标记完成","Mark completed"],
+apCancel:["取消预约","Cancel appointment"],apRemind:["发提醒短信","Send reminder"],apOpen:["打开客户档案","Open client file"],
+apNewTime:["选择新的日期和时间","Pick a new day and time"],
+tab_ov:["概览","Overview"],tab_hist:["到店记录","Visits"],tab_log:["沟通记录","Messages"],tab_pkg:["套餐","Package"],tab_note:["备注","Notes"],
+k_phone:["电话","Phone"],k_email:["邮箱","Email"],k_src:["来源","Source"],k_doc:["常看医生","Practitioner"],
+k_first:["首次到店","First visit"],k_last:["最后到店","Last visit"],k_visits:["到店次数","Total visits"],k_next:["下次预约","Next appointment"],
+k_ref:["转介绍","Referrals"],k_none:["暂无","None"],k_daysAgo:["{n} 天前","{n} days ago"],
+refBy:["由 {n} 推荐","Referred by {n}"],refMade:["已推荐 {n} 位朋友","Referred {n} friend(s)"],
+consentTitle:["接收意愿","Consent"],consentSms:["接收短信","Text messages"],consentEmail:["接收邮件","Email"],consentWx:["微信","WeChat"],
+tagsTitle:["标签","Tags"],tagPh:["加一个标签，如「怕冷」「只周末来」","Add a tag, e.g. \"weekends only\""],add:["添加","Add"],noTags:["还没有标签","No tags yet"],
+noteTitle:["前台备注","Front-desk notes"],notePh:["例如：下次提前 10 分钟到，需要停车位","e.g. arrives 10 min early, needs parking"],
+noteFine:["备注只记沟通和服务安排，不记病情。","Notes cover scheduling and service only — never medical details."],
+noLog:["还没有沟通记录。在这个演示里，你发出的每条消息都会记到这里。","No messages yet. In this demo, everything you send is logged here."],
+noPkg:["这位客户没有在用的套餐。","This client has no active package."],
+pkgLeft:["还剩 {n} 次","{n} visits left"],pkgExp:["{n} 天后到期","expires in {n} days"],
+act_sms:["发短信","Send text"],act_email:["发邮件","Send email"],act_book:["约下一次","Book next"],act_saveNote:["保存备注","Save notes"],
+rc_segAll:["全部需召回","All"],rc_segLap:["流失 · 91–180 天","Lapsed · 91–180 days"],rc_segDor:["沉睡 · 180 天以上","Dormant · 180+ days"],
+rc_stats:["符合条件 <b>{a}</b> 人，其中 <b>{b}</b> 人同意接收{c}，<b>{d}</b> 人未同意已自动排除。","<b>{a}</b> match, <b>{b}</b> have opted in to {c}, <b>{d}</b> excluded for no consent."],
+rc_est:["按 10% 回头率估算，可带回","At a 10% return rate, that's about"],rc_people:["{n} 人","{n} people"],
+rc_tplSms:["召回短信内容","Win-back text"],rc_tplEmail:["召回邮件内容","Win-back email"],rc_tplWx:["召回微信内容","Win-back WeChat message"],
+preview:["预览","Preview"],send:["发送（{n}）","Send ({n})"],
+rc_quiet:["发送时段已限制在 9:00–20:00。这是演示，点击不会真正发出消息。","Sending is limited to 9:00–20:00. This is a demo — nothing is actually sent."],
+noConsent:["未同意","No consent"],invite:["邀请同意","Ask to opt in"],
+sentTitle:["已模拟发送 {n} 条","{n} messages simulated"],
+sentBody:["演示到此为止，没有真的发出消息。<br>正式系统里这一步会通过合规的医疗消息服务发出，并把结果写进每位客户的沟通记录——下个月报表上就能看到这批人带回多少到店。","Nothing was actually sent. In production this goes out through a compliant messaging service and writes back to each client's record, so next month's report shows exactly how many came back."],
+ru_needs:["需要：{n}","Requires: {n}"],ru_cover:["可覆盖 <b>{a}</b> 位客户，另有 {b} 位未同意","Covers <b>{a}</b> clients; {b} more haven't opted in"],
+ru_sent:["本月已自动发送 <b>{n}</b> 条","<b>{n}</b> sent automatically this month"],ru_off:["已关闭","Switched off"],
+ru_trig:["触发","Trigger"],ru_chan:["渠道","Channel"],
+auStamp:["本月自动发出 {a} 条，{b} 条规则未开启","{a} sent automatically this month · {b} rule(s) off"],
+cmp_stop:["所有短信模板都带退订提示","Every text template carries an opt-out line"],
+cmp_quiet:["发送时段限制 9:00–20:00 已开启","Quiet hours enforced (9:00–20:00)"],
+cmp_consent:["{n} 位客户没有记录短信同意，无法发营销消息","{n} clients have no recorded text consent and cannot be messaged"],
+cmp_baa:["短信服务商的 BAA 协议尚未上传","No BAA on file for the messaging provider"],
+cmp_phi:["营销内容不含任何诊疗信息","No clinical information in any marketing content"],
+needOwner:["此操作需要管理员权限（当前身份：{n}）","Owner access required (you are signed in as {n})"],
+needSend:["当前身份不能发送营销消息","This role cannot send marketing messages"],
+blAct:["活跃客户","Active"],blNew:["新客","New"],blVip:["VIP","VIP"],blAll:["全部客户","Everyone"],
+blCount:["本次将发给 <b>{n}</b> 位客户","Goes out to <b>{n}</b> clients"],blSend:["发送群发","Send campaign"],
+rv_avg:["平均评分","Average rating"],rv_avg_f:["共 {n} 条评价","{n} reviews total"],
+rv_month:["本月新增","New this month"],rv_month_f:["就诊后自动邀评","From automatic invites"],
+rv_low:["低分预警","Flagged"],rv_low_f:["3 星及以下，需要跟进","3 stars or lower — needs follow-up"],
+rv_pending:["待回复","Awaiting reply"],rv_pending_f:["建议 48 小时内回复","Reply within 48 hours"],
+rv_all:["全部","All"],rv_high:["4–5 星","4–5 stars"],rv_lowf:["低分","Low"],rv_need:["待回复","Needs reply"],
+rv_reply:["回复","Reply"],rv_replied:["诊所回复","Clinic reply"],rv_invite:["发送邀评","Send review invites"],
+rv_inviteDone:["已向昨天到店的 {n} 位客户发出邀评","Review invites sent to {n} clients who visited yesterday"],
+rv_replyDone:["已套用模板回复","Template reply posted"],rv_none:["没有符合条件的评价","No reviews match"],
+range6:["近 6 个月","Last 6 months"],range12:["近 12 个月","Last 12 months"],
+lgVisits:["到店人次","Visits"],lgNew:["新客","New clients"],
+trendNote:["柱顶数字为到店人次。新客从 {a} 增至 {b}，到店人次从 {c} 升至 {d}。","Numbers above the bars are visits. New clients went from {a} to {b}; visits from {c} to {d}."],
+fun1:["只来过 1 次","1 visit only"],fun2:["来过 2 次","2 visits"],fun3:["3–5 次","3–5 visits"],fun6:["6 次以上","6+ visits"],
+takeaway:["<b>人数多不等于质量好。</b>来人最多的是 <b>{a}</b>（{b} 人），但留得最好的是 <b>{c}</b>——这批客户有 {d}% 现在仍然活跃，平均到店 {e} 次。有了来源记录才看得出这个区别。","<b>Volume isn't quality.</b> The biggest source is <b>{a}</b> ({b} clients), but the one that holds people is <b>{c}</b> — {d}% of those clients are still active, averaging {e} visits. You only see that difference if you record the source."],
+aboutLead:["这是一套为中医诊所定制的客户管理系统演示。所有功能都能点、都有反应，但数据是虚构的，也不会真的发出任何消息。","A client-management system built for a traditional Chinese medicine clinic. Everything here is clickable and responds, but the data is fictional and nothing is actually sent."],
+ab1:["<b>随便点。</b>左边七个模块都能进，表格能排序、能筛选，预约能改期，客户档案能编辑。","<b>Click anything.</b> All seven sections work — tables sort and filter, appointments reschedule, client files are editable."],
+ab2:["<b>换个身份看看。</b>左上角可以在前台、营销、老板之间切换，能看到的模块和能做的操作都不一样。","<b>Switch roles.</b> Front Desk, Marketing and Owner each see a different set of sections and controls."],
+ab3:["<b>刷新就还原。</b>所有改动只存在浏览器内存里，刷新页面或点「重置演示数据」就回到初始状态。","<b>Refresh resets it.</b> Changes live in memory only — reload or hit \"Reset demo data\" to start over."],
+aboutWarn:["<b>不会发出任何真实消息。</b>所有姓名和电话都是虚构的，电话使用 555 测试号段。本系统不保存病情、诊断或保险信息。","<b>Nothing is really sent.</b> All names and numbers are fictional and use the 555 test range. This system stores no conditions, diagnoses or insurance data."],
+resetDone:["演示数据已重置","Demo data reset"],
+tagAdded:["已加标签：{n}","Tag added: {n}"],tagRemoved:["已删除标签","Tag removed"],noteSaved:["备注已保存","Notes saved"],
+smsSent:["已模拟发送短信给 {n}","Text simulated to {n}"],emailSent:["已模拟发送邮件给 {n}","Email simulated to {n}"],
+apConfirmed:["已确认 {n} 的预约","{n}'s appointment confirmed"],apCancelled:["已取消 {n} 的预约","{n}'s appointment cancelled"],
+apCompleted:["已标记完成","Marked completed"],apMoved:["已改期到 {n}","Moved to {n}"],apAdded:["已加入日历：{n}","Added to calendar: {n}"],
+apReminded:["已模拟发送提醒给 {n}","Reminder simulated to {n}"],waitlist:["3 位客户在候补名单，是否通知？","3 clients are on the waitlist — notify them?"],
+clAdded:["已建档：{n}（新客）","Client created: {n} (new)"],needName:["请先填姓名","Enter a name first"],
+consentOn:["已记录同意","Consent recorded"],consentOff:["已取消同意","Consent withdrawn"],
+ruleOn:["已开启：{n}","Switched on: {n}"],ruleOff:["已关闭：{n}","Switched off: {n}"],ruleSaved:["规则已保存","Rule saved"],
+inviteSent:["已向 {n} 位客户发出同意邀请","Opt-in invites sent to {n} clients"],
+todo_appt:["{n} 个预约还没确认","{n} appointments not confirmed"],todo_appt_s:["客户不确认，爽约率会升高","Unconfirmed slots are the ones people miss"],todo_appt_b:["去确认","Review"],
+todo_follow:["{n} 位客户今天该发复诊提醒","{n} clients are due a follow-up reminder"],todo_follow_s:["上次到店已满 14 天","14 days since their last visit"],todo_follow_b:["一键发送","Send all"],
+todo_recall:["{n} 位客户超过 90 天没来","{n} clients haven't returned in 90+ days"],todo_recall_s:["这是本月最大的一批可挽回客户","The biggest recoverable group this month"],todo_recall_b:["去召回","Open"],
+todo_consent:["{n} 位客户没记录短信同意","{n} clients have no text consent on file"],todo_consent_s:["没有同意就不能发营销消息","Without it they can't be included in any campaign"],todo_consent_b:["去处理","Fix"],
+todo_review:["{n} 条评价还没回复","{n} reviews are still unanswered"],todo_review_s:["低分评价尤其要尽快回","Low ratings especially"],todo_review_b:["去回复","Reply"],
+todo_pkg:["{n} 位客户的套餐快用完了","{n} clients are nearly out of package visits"],todo_pkg_s:["这是最容易续卡的时机","The easiest moment to renew them"],todo_pkg_b:["查看","View"],
+al_noshow:["本月爽约 {n} 次","{n} no-shows this month"],al_noshow_s:["开启「提前 24 小时提醒」通常能减少一半","Turning on the 24-hour reminder usually halves this"],al_noshow_b:["去开启","Turn on"],
+al_ins:["{n} 位客户的保险针灸福利今年还没用完","{n} clients haven't used this year's acupuncture benefit"],al_ins_s:["多数计划 12 月 31 日清零，11 月提醒效果最好","Most plans reset on Dec 31 — November is the moment to remind them"],al_ins_b:["发提醒","Remind"],
+al_rules:["{n} 条自动化规则因为缺少客户同意无法开启","{n} automation rules can't run — consent is missing"],al_rules_s:["先把同意收齐，规则才跑得动","Collect consent first and the rules start working"],al_rules_b:["查看","View"],
+insSent:["已向 {n} 位客户发出保险福利提醒","Benefit reminders sent to {n} clients"],
+fdFollow:["系统自动给 <b>{n} 位</b>客户发出复诊提醒","Follow-up reminders sent automatically to <b>{n}</b> clients"],
+fdBook:["<b>{n}</b> 通过网上预约了 {s}","<b>{n}</b> booked {s} online"],
+fdRecall:["<b>{n} 位</b>客户进入「需要召回」名单","<b>{n}</b> clients moved into the win-back list"],
+fdReview:["<b>{n}</b> 留下了一条 5 星评价","<b>{n}</b> left a 5-star review"],
+fdSeason:["节气养生内容已发送给 <b>{n} 位</b>订阅客户","Seasonal wellness email sent to <b>{n}</b> subscribers"],
+ago2h:["2 小时前","2 hours ago"],ago3h:["3 小时前","3 hours ago"],agoToday:["今天 08:00","Today 08:00"],agoYest:["昨天","Yesterday"],ago3d:["3 天前","3 days ago"],
+logSms:["短信","Text"],logEmail:["邮件","Email"],logVisit:["到店","Visit"],logNote:["备注","Note"],logCall:["电话","Call"],
+by:["操作人","by"],
+dm_avg:["平均到店次数","Avg visits per client"],dm_pkg:["有套餐在用","Active packages"],dm_cns:["已同意接收短信","Opted in to texts"],
+takeaway2:["<b>人数多不等于质量好。</b><b>{a}</b> 既是最大来源（{b} 人），也是留得最好的——{d}% 仍然活跃，平均到店 {e} 次。相比之下 <b>{f}</b> 来了 {g} 人，只有 {h}% 留了下来。","<b>Volume isn't quality.</b> <b>{a}</b> is both the biggest source ({b} clients) and the stickiest — {d}% still active, averaging {e} visits. By contrast <b>{f}</b> brought in {g} and only {h}% stayed."]
+};
+var lang=0;
+function t(k,o){var s=(L[k]||["",""])[lang];if(o)for(var p in o)s=s.split("{"+p+"}").join(o[p]);return s;}
+function tx(pair){return pair[lang];}
+function applyI18n(){
+  document.querySelectorAll("[data-t]").forEach(function(e){e.textContent=t(e.dataset.t);});
+  document.documentElement.lang=lang?"en":"zh-CN";
+}
+var $=function(i){return document.getElementById(i);};
+function esc(s){return String(s).replace(/[&<>"]/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m];});}
+
+/* ---------------- static tables ---------------- */
+var SVC=[["针灸","Acupuncture"],["推拿","Tui Na"],["拔罐","Cupping"],["艾灸","Moxibustion"],["中药调理","Herbal Therapy"],
+  ["正骨","Bone Setting"],["刮痧","Gua Sha"],["减重调理","Weight Program"],["失眠调理","Sleep Program"],["颈肩调理","Neck & Shoulder"]];
+var SRC=[["老客推荐","Referral"],["小红书","RedNote"],["微信群","WeChat Group"],["讲座","Workshop"],["路过","Walk-in"],["Google 搜索","Google Search"]];
+var DOC=[["林静远","Dr. J. Lin"],["陈淑华","Dr. S. Chen"],["高明哲","Dr. M. Gao"]];
+var WAY=[["网上预约","Online"],["电话预约","Phone"],["前台预约","Walk-in"]];
+var PKG=[["十次卡","10-Visit Pass"],["调理套餐","Wellness Package"],["月卡","Monthly Pass"]];
+var DAYN=[["周一","Mon"],["周二","Tue"],["周三","Wed"],["周四","Thu"],["周五","Fri"],["周六","Sat"],["周日","Sun"]];
+var TIMES=["9:00","9:45","10:30","11:15","13:30","14:15","15:00","15:45","16:30"];
+var SURN="王李张刘陈杨黄赵吴周徐孙马朱胡林郭何高罗郑梁谢宋唐许韩冯邓曹彭曾蔡潘袁沈".split("");
+var GIVN=["嘉怡","志强","慧敏","晓东","佩琪","国华","淑芬","明哲","雅婷","建民","丽华","俊杰","秀英","文斌","美玲","宇航","春燕","天翔","晓梅","浩然","思远","雨桐","紫涵","博文","佳宁","立新","秋萍","振华","婉清","子轩","海燕","德昌","若兰","文静","凯","敏","洁","磊","婷","峰","欣怡","家豪"];
+var FIRSTE=["Emily","David","Grace","Kevin","Sophia","Michael","Olivia","Daniel","Chloe","Ethan","Mia","Jason","Hannah","Lucas","Ava","Noah","Lily","Owen","Zoe","Leo","Nina","Victor","Iris","Alan","Cindy","Peter","Fiona","Derek","Karen","Eric","Tina","Simon","Joyce","Henry","Elaine","Marcus"];
+var LASTE=["Chen","Park","Liu","Wu","Tan","Ho","Ng","Kim","Lam","Zhao","Huang","Ko","Shen","Ye","Fong","Teng","Guo","Xu","Pan","Mak","Lin","Yeung","Soo","Quan","Hsu","Deng","Lo","Tsai","Jiang","Bai"];
+var RVTXT=[
+ [["第一次来就被医生的耐心打动，诊所很干净，针灸之后肩颈轻松多了。","First visit and the practitioner took real time with me. Clean space, and my shoulders felt lighter afterwards."],5],
+ [["调理了三个月，睡眠确实好了不少。前台每次都会提前提醒，很省心。","Three months in and my sleep is noticeably better. The front desk always reminds me ahead of time."],5],
+ [["医生很专业，会解释为什么这样调理。停车稍微麻烦一点。","The practitioner explains the reasoning behind everything. Parking is a bit of a hassle."],4],
+ [["效果还行，就是等的时间有点久，预约 2 点等到 2 点半。","Decent results, but I waited half an hour past my 2pm appointment."],3],
+ [["推拿手法很好，环境安静。会再来。","Great massage technique, very calm space. I'll be back."],5],
+ [["问了保险能不能报，前台帮我查得很仔细，这点加分。","I asked about insurance and the front desk checked carefully for me. Big plus."],5],
+ [["第一次拔罐，医生讲解得很清楚，不紧张了。","First time cupping — it was explained clearly and I wasn't nervous at all."],5],
+ [["预约改过两次，沟通有点乱，希望系统能改进。","I rescheduled twice and the communication got confusing. Hope that improves."],2],
+ [["艾灸之后整个人暖起来了，冬天很舒服。","I felt warm all over after moxibustion — lovely in winter."],5],
+ [["价格透明，没有推销套餐，这点很舒服。","Prices are clear and nobody pushed a package on me. Refreshing."],5],
+ [["效果因人而异吧，我做了四次感觉一般。","Results vary I guess — four sessions in and I'm neutral."],3],
+ [["医生记得我上次说的情况，很用心。","The practitioner remembered what I'd said last time. That meant a lot."],5]];
+var RVREPLY=[["谢谢您的反馈，我们已经记下来了。欢迎随时联系前台。","Thank you for the feedback — we've noted it. Please reach out to our front desk any time."],1];
+
+/* ---------------- state ---------------- */
+var ST={role:"owner",view:"ov",lang:0};
+var T={clinic:["示范中医诊所","Demo TCM Clinic"],doc:["林静远","Dr. J. Lin"],phone:"(XXX) XXX-XXXX"};
+var CL=[],AP=[],RV=[],MEMO={},FEED=[],RULES=[],TODO={},uid=1,seed=20261022;
+function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function pick(a){return a[Math.floor(rnd()*a.length)];}
+var MS=864e5,NOW=new Date();
+function dstr(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function dOf(n){return dstr(new Date(NOW.getTime()-n*MS));}
+function todayIdx(){return (NOW.getDay()+6)%7;}
+function tmin(x){var p=x.split(':');return +p[0]*60+ +p[1];}
+function byTime(a,b){return tmin(a.t)-tmin(b.t);}
+var weekStart=(function(){var d=new Date(NOW);d.setHours(0,0,0,0);d.setDate(NOW.getDate()-todayIdx());return d;})();
+function dayDate(i){return new Date(weekStart.getTime()+i*MS);}
+
+var PERM={
+ front:{views:["ov","ap","cl","rv"],rules:false,send:false,fullPhone:true},
+ mkt:  {views:["ov","cl","rc","au","rv","rp"],rules:false,send:true,fullPhone:false},
+ owner:{views:["ov","ap","cl","rc","au","rv","rp"],rules:true,send:true,fullPhone:true}};
+var ROLEN={front:"rFront",mkt:"rMkt",owner:"rOwner"};
+function perm(){return PERM[ST.role];}
+function can(k){return perm()[k];}
+
+/* ---------------- data ---------------- */
+var SRCW=[[40,24,16,14,3,6],[26,22,12,10,14,16],[12,16,8,6,30,28]];
+var SRCF=[1.5,1.05,1.2,1.4,0.7,0.85];
+function pickSrc(b){var w=SRCW[b],tot=0,i;for(i=0;i<w.length;i++)tot+=w[i];var r=rnd()*tot;
+  for(i=0;i<w.length;i++){r-=w[i];if(r<=0)return i;}return 0;}
+
+function buildData(){
+  seed=20261022;CL=[];AP=[];RV=[];MEMO={};FEED=[];TODO={};uid=1;
+  var used={},idx=0;
+  [[32,1,90],[19,91,180],[13,181,420]].forEach(function(b,bi){
+    for(var i=0;i<b[0];i++){
+      var zh;do{zh=pick(SURN)+pick(GIVN);}while(used[zh]);used[zh]=1;
+      var en=FIRSTE[idx%FIRSTE.length]+" "+LASTE[(idx*13)%LASTE.length];
+      var days=b[1]+Math.floor(rnd()*(b[2]-b[1]+1));
+      var si=pickSrc(bi);
+      var visits=1+Math.round(rnd()*rnd()*(days<=90?13:8)*SRCF[si]);
+      var hist=[],d=days,k;
+      for(k=0;k<Math.min(visits,14);k++){hist.push(d);d+=14+Math.floor(rnd()*32);}
+      var hasEmail=rnd()<.66;
+      var c={id:uid++,zh:zh,en:en,days:days,visits:visits,si:si,vi:Math.floor(rnd()*SVC.length),
+        di:Math.floor(rnd()*DOC.length),
+        phone:"650-555-0"+String(100+Math.floor(rnd()*899)).slice(0,3),
+        email:hasEmail?(en.split(" ")[0].toLowerCase()+"."+en.split(" ")[1].toLowerCase()+"@example.com"):"",
+        cs:rnd()<.78,ce:hasEmail&&rnd()<.62,cw:rnd()<.45,
+        hist:hist,first:hist[hist.length-1],tags:[],note:"",log:[],
+        pkg:null,refBy:null,refN:0,bday:Math.floor(rnd()*365),ins:rnd()<.42};
+      if(rnd()<.32){var pt=Math.floor(rnd()*PKG.length),tot=[10,6,4][pt];
+        c.pkg={i:pt,total:tot,used:Math.min(tot,1+Math.floor(rnd()*tot)),exp:30+Math.floor(rnd()*200)};}
+      if(c.visits>=3&&rnd()<.35)c.refN=1+Math.floor(rnd()*3);
+      CL.push(c);idx++;
+    }
+  });
+  CL.forEach(retag);
+  CL.sort(function(a,b){return a.days-b.days;});
+  CL.forEach(function(c,i){
+    if(c.si===0&&i>6&&rnd()<.5)c.refBy=CL[Math.floor(rnd()*6)].id;
+    if(c.days<=120&&rnd()<.4)c.log.push({d:c.days,ty:"logVisit",tx:tx(SVC[c.vi]),who:"系统"});
+  });
+  /* appointments */
+  var pool=CL.filter(function(c){return c.days<=140;});
+  var ti=todayIdx();
+  for(var d2=0;d2<7;d2++){
+    var n=d2===6?2:3+Math.floor(rnd()*3);
+    var slots=TIMES.slice().sort(function(){return rnd()-.5;}).slice(0,n).sort();
+    slots.forEach(function(tm){
+      var c=pool[Math.floor(rnd()*pool.length)];
+      var stt=d2<ti?"done":(rnd()<.3?"pend":"conf");
+      if(d2<ti&&rnd()<.12)stt="canc";
+      AP.push({id:uid++,d:d2,t:tm,cid:c.id,vi:Math.floor(rnd()*SVC.length),
+        wi:Math.floor(rnd()*WAY.length),di:c.di,st:stt});
+    });
+  }
+  /* reviews */
+  for(var r=0;r<12;r++){
+    var cc=CL[Math.floor(rnd()*Math.min(28,CL.length))];
+    RV.push({id:uid++,cid:cc.id,stars:RVTXT[r][1],tx:RVTXT[r][0],days:2+Math.floor(rnd()*70),
+      reply:(RVTXT[r][1]>=4&&rnd()<.55)?RVREPLY[0]:null});
+  }
+  RV.sort(function(a,b){return a.days-b.days;});
+  /* rules */
+  RULES=[
+   {id:"r1",nm:["复诊提醒","Follow-up reminder"],tg:["上次到店后 14 天","14 days after last visit"],days:14,ch:0,on:true,sent:34,rep:9,bk:12},
+   {id:"r2",nm:["评价邀请","Review invite"],tg:["就诊结束后 2 小时","2 hours after a visit"],days:0,ch:0,on:true,sent:46,rep:14,bk:0},
+   {id:"r3",nm:["流失召回","Win-back"],tg:["90 天未到店","90 days with no visit"],days:90,ch:0,on:false,sent:32,rep:7,bk:5},
+   {id:"r4",nm:["生日关怀","Birthday note"],tg:["生日当天","On their birthday"],days:0,ch:0,on:true,sent:6,rep:2,bk:2},
+   {id:"r5",nm:["节气养生内容","Seasonal wellness"],tg:["每个节气","Every solar term"],days:0,ch:1,on:true,sent:41,rep:11,bk:6},
+   {id:"r6",nm:["老带新邀请","Referral invite"],tg:["到店满 3 次","After 3 visits"],days:0,ch:0,on:false,sent:18,rep:4,bk:3},
+   {id:"r7",nm:["爽约跟进","No-show follow-up"],tg:["爽约次日","Day after a no-show"],days:1,ch:0,on:true,sent:5,rep:3,bk:3},
+   {id:"r8",nm:["年底保险福利提醒","Year-end benefit reminder"],tg:["11 月 15 日","November 15"],days:0,ch:1,on:false,sent:27,rep:9,bk:11}];
+  RULES.forEach(function(r){r.msg=null;});
+  /* feed */
+  FEED=[
+   {k:"fdFollow",v:{n:12},a:"ago2h",d:""},
+   {k:"fdBook",v:{n:CL[0]?nm(CL[0]):"",s:tx(SVC[2])},a:"ago3h",d:"i"},
+   {k:"fdRecall",v:{n:recallAll().length},a:"agoToday",d:"w"},
+   {k:"fdReview",v:{n:CL[2]?nm(CL[2]):""},a:"agoYest",d:""},
+   {k:"fdSeason",v:{n:CL.filter(function(c){return c.ce;}).length},a:"ago3d",d:"i"}];
+}
+function retag(c){
+  c.st=(c.days<=90&&c.visits===1)?"new":c.days<=90?"act":c.days<=180?"lap":"dor";
+  c.vip=c.visits>=10;
+}
+function nm(c){return lang?c.en:c.zh;}
+function byId(id){for(var i=0;i<CL.length;i++)if(CL[i].id===id)return CL[i];return null;}
+function apById(id){for(var i=0;i<AP.length;i++)if(AP[i].id===id)return AP[i];return null;}
+function recallAll(){return CL.filter(function(c){return c.days>90;});}
+function phoneOf(c){return can("fullPhone")?c.phone:c.phone.slice(0,8)+"••"+c.phone.slice(-2);}
+function stChip(c){
+  var m={new:["st_new","c-new"],act:["st_act","c-act"],lap:["st_lap","c-lap"],dor:["st_dor","c-dor"]}[c.st];
+  return '<span class="chip '+m[1]+'">'+t(m[0])+'</span>'+(c.vip?'<span class="chip c-vip">VIP</span>':'');
+}
+function logAdd(c,ty,txt){c.log.unshift({d:0,ty:ty,tx:txt,who:t(ROLEN[ST.role])});}
+/* ---------------- ui helpers ---------------- */
+var toastT;
+function toast(m){var e=$("toast");e.textContent=m;e.classList.add("on");clearTimeout(toastT);
+  toastT=setTimeout(function(){e.classList.remove("on");},2400);}
+function openM(i){$(i).hidden=false;}
+function closeM(i){$(i).hidden=true;}
+function info(title,html){$("infoTitle").textContent=title;$("infoBody").innerHTML=html;
+  $("infoOk").textContent=t("ok");openM("mInfo");}
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-close]");if(b)closeM(b.dataset.close);});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"){["mAbout","mSet","mAppt","mNewAp","mNewCl","mRule","mInfo"].forEach(closeM);$("drawerWrap").hidden=true;}});
+var tipEl;
+function showTip(e,txt){tipEl=tipEl||$("tip");tipEl.textContent=txt;tipEl.classList.add("on");
+  var x=e.clientX+12,y=e.clientY-34;
+  if(x+tipEl.offsetWidth>window.innerWidth-8)x=window.innerWidth-tipEl.offsetWidth-8;
+  tipEl.style.left=x+"px";tipEl.style.top=Math.max(8,y)+"px";}
+function hideTip(){if(tipEl)tipEl.classList.remove("on");}
+function denyOwner(){toast(t("needOwner",{n:t(ROLEN[ST.role])}));}
+
+/* ---------------- nav ---------------- */
+var VIEWS=["ov","ap","cl","rc","au","rv","rp"];
+var ICONS={
+ov:'<path d="M3 12h4l2.5 6 4-14 2.5 8h5"/>',
+ap:'<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+cl:'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.3 2.9-5 5.5-5s4.9 1.7 5.5 5"/><path d="M16.5 7.2a3 3 0 0 1 0 5.6M18 19c-.3-1.8-1-3.2-2-4.2"/>',
+rc:'<path d="M4 5h16v11H8l-4 4z"/><path d="M8.5 10.5h7"/>',
+au:'<path d="M12 3v3M12 18v3M4.2 7.5l2.6 1.5M17.2 15l2.6 1.5M4.2 16.5l2.6-1.5M17.2 9l2.6-1.5"/><circle cx="12" cy="12" r="3.4"/>',
+rv:'<path d="M12 4l2.3 4.9 5.2.7-3.8 3.7 1 5.3-4.7-2.6-4.7 2.6 1-5.3L4.5 9.6l5.2-.7z"/>',
+rp:'<path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/>'};
+function renderNav(){
+  var vs=perm().views;
+  $("nav").innerHTML=vs.map(function(v){
+    var b=v==="rc"?'<span class="bdg">'+recallAll().length+'</span>':
+          v==="rv"?(RV.filter(function(r){return !r.reply;}).length?'<span class="bdg">'+RV.filter(function(r){return !r.reply;}).length+'</span>':''):'';
+    return '<button class="nb" role="tab" data-v="'+v+'" aria-selected="'+(v===ST.view)+'">'+
+      '<svg class="ic" viewBox="0 0 24 24">'+ICONS[v]+'</svg>'+t("nav_"+v)+b+'</button>';
+  }).join("");
+}
+function go(v){
+  if(perm().views.indexOf(v)<0)v=perm().views[0];
+  ST.view=v;
+  VIEWS.forEach(function(k){$("v-"+k).hidden=(k!==v);});
+  document.querySelectorAll(".nb").forEach(function(b){b.setAttribute("aria-selected",b.dataset.v===v);});
+  if(v==="rp")renderReports();
+  if(v==="ap")renderCal();
+  window.scrollTo(0,0);
+}
+$("nav").addEventListener("click",function(e){var b=e.target.closest(".nb");if(b)go(b.dataset.v);});
+
+/* ---------------- overview ---------------- */
+function todoList(){
+  var out=[],vs=perm().views;
+  var pend=AP.filter(function(a){return a.st==="pend";}).length;
+  if(pend&&vs.indexOf("ap")>=0)out.push({k:"appt",n:pend,d:"w",go:"ap"});
+  var due=CL.filter(function(c){return c.days>=14&&c.days<=30&&c.cs;}).length;
+  if(due)out.push({k:"follow",n:due,d:"",fn:function(){
+    CL.filter(function(c){return c.days>=14&&c.days<=30&&c.cs;}).forEach(function(c){logAdd(c,"logSms",t("todo_follow_b"));});
+    toast(t("sentTitle",{n:due}));}});
+  var rc=recallAll().length;
+  if(vs.indexOf("rc")>=0)out.push({k:"recall",n:rc,d:"a",go:"rc"});
+  var noc=CL.filter(function(c){return !c.cs;}).length;
+  if(noc)out.push({k:"consent",n:noc,d:"w",go:"cl",fn2:function(){clF="noc";}});
+  var nr=RV.filter(function(r){return !r.reply;}).length;
+  if(nr&&vs.indexOf("rv")>=0)out.push({k:"review",n:nr,d:"",go:"rv"});
+  var pk=CL.filter(function(c){return c.pkg&&c.pkg.total-c.pkg.used<=2;}).length;
+  if(pk)out.push({k:"pkg",n:pk,d:"",go:"cl",fn2:function(){clF="pkg";}});
+  return out;
+}
+function renderTodo(){
+  var ls=todoList(),left=ls.filter(function(x){return !TODO[x.k];}).length;
+  $("todoLeft").textContent=left?t("todoLeft",{n:left}):t("todoDone");
+  $("todoList").innerHTML=ls.map(function(x,i){
+    return '<div class="ti'+(TODO[x.k]?" done":"")+'"><span class="dot '+x.d+'"></span>'+
+      '<span class="tx"><b>'+t("todo_"+x.k,{n:x.n})+'</b><small>'+t("todo_"+x.k+"_s")+'</small></span>'+
+      '<button class="btn sm '+(TODO[x.k]?"dim":"sec")+'" data-todo="'+i+'">'+t("todo_"+x.k+"_b")+'</button></div>';
+  }).join("")||'<p class="note">'+t("todoDone")+'</p>';
+}
+$("todoList").addEventListener("click",function(e){
+  var b=e.target.closest("[data-todo]");if(!b)return;
+  var x=todoList()[+b.dataset.todo];if(!x)return;
+  TODO[x.k]=true;
+  if(x.fn)x.fn();
+  if(x.fn2)x.fn2();
+  if(x.go){renderClients();go(x.go);}
+  renderTodo();renderAll(true);
+});
+function renderAlerts(){
+  var ns=AP.filter(function(a){return a.st==="canc";}).length+3;
+  var ins=CL.filter(function(c){return c.ins&&c.days<=240;}).length;
+  var offR=RULES.filter(function(r){return !r.on;}).length;
+  var rows=[
+   {c:"",k:"al_noshow",v:{n:ns},fn:function(){var r=RULES[6];r.on=true;renderAuto();toast(t("ruleOn",{n:tx(r.nm)}));}},
+   {c:"a",k:"al_ins",v:{n:ins},fn:function(){
+      CL.filter(function(c){return c.ins&&c.days<=240;}).forEach(function(c){logAdd(c,"logEmail",tx(RULES[7].nm));});
+      toast(t("insSent",{n:ins}));renderAll(true);}},
+   {c:"g",k:"al_rules",v:{n:offR},fn:function(){go("au");}}];
+  $("alertList").innerHTML=rows.map(function(r,i){
+    return '<div class="al '+r.c+'"><span class="tx"><b>'+t(r.k,r.v)+'</b>'+t(r.k+"_s")+'</span>'+
+      '<button class="btn sm sec" data-al="'+i+'">'+t(r.k+"_b")+'</button></div>';}).join("");
+  $("alertList").onclick=function(e){var b=e.target.closest("[data-al]");if(!b)return;rows[+b.dataset.al].fn();};
+}
+function renderOverview(){
+  var d=NOW;
+  $("ovStamp").textContent=lang?d.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}):
+    d.getFullYear()+" 年 "+(d.getMonth()+1)+" 月 "+d.getDate()+" 日";
+  var r30=CL.filter(function(c){return c.days<=30;}).length;
+  var fresh=CL.filter(function(c){return c.days<=30&&c.visits===1;}).length;
+  var rc=recallAll().length;
+  var rep=Math.round(CL.filter(function(c){return c.visits>=2;}).length/CL.length*100);
+  var ts=[["tl_total",CL.length,"tl_total_f",null,""],["tl_30",r30,"tl_30_f",{n:fresh},"cl"],
+    ["tl_recall",rc,"tl_recall_f",null,"rc","flag"],["tl_repeat",rep+"%","tl_repeat_f",null,"rp"]];
+  $("ovTiles").innerHTML=ts.map(function(x){
+    return '<button class="tile'+(x[5]?" flag":"")+'" data-goto="'+(x[4]||"")+'"><span class="lb">'+t(x[0])+'</span>'+
+      '<span class="vv">'+x[1]+'</span><span class="ft">'+t(x[2],x[3])+'</span></button>';}).join("");
+  $("ovTiles").onclick=function(e){var b=e.target.closest("[data-goto]");
+    if(b&&b.dataset.goto&&perm().views.indexOf(b.dataset.goto)>=0)go(b.dataset.goto);};
+  renderTodo();renderAlerts();
+  var gs=[["st_new","var(--info)","new"],["st_act","var(--accent)","act"],["st_lap","var(--warn)","lap"],["st_dor","var(--alert)","dor"]];
+  var tot=CL.length;
+  $("distBar").innerHTML=gs.map(function(g){
+    var n=CL.filter(function(c){return c.st===g[2];}).length;
+    return '<span style="width:'+(n/tot*100)+'%;background:'+g[1]+'"></span>';}).join("");
+  $("distKey").innerHTML=gs.map(function(g){
+    var n=CL.filter(function(c){return c.st===g[2];}).length;
+    return '<button data-seg="'+g[2]+'"><i style="background:'+g[1]+'"></i>'+t(g[0])+' <b class="num">'+n+'</b></button>';}).join("");
+  $("distKey").onclick=function(e){var b=e.target.closest("[data-seg]");if(!b)return;
+    clF=b.dataset.seg;renderClients();go("cl");};
+  var avgV=(CL.reduce(function(s2,c){return s2+c.visits;},0)/CL.length).toFixed(1);
+  $("distMini").innerHTML=[[t("dm_avg"),avgV],[t("dm_pkg"),CL.filter(function(c){return c.pkg;}).length],
+    [t("dm_cns"),CL.filter(function(c){return c.cs;}).length]].map(function(x){
+    return '<div class="ms"><span class="k">'+x[0]+'</span><span class="v num">'+x[1]+'</span></div>';}).join("");
+  var ti=todayIdx();
+  var today=AP.filter(function(a){return a.d===ti&&a.st!=="canc";}).sort(byTime);
+  $("tTodayAp").querySelector("thead").innerHTML="<tr><th>"+t("th_time")+"</th><th>"+t("th_client")+
+    "</th><th>"+t("th_svc")+"</th><th>"+t("th_state")+"</th></tr>";
+  $("tTodayAp").querySelector("tbody").innerHTML=today.length?today.map(function(a){
+    var c=byId(a.cid);
+    return "<tr class='ck' data-cid='"+c.id+"'><td class='num'>"+a.t+"</td><td>"+nm(c)+"</td><td>"+tx(SVC[a.vi])+
+      "</td><td><span class='chip "+(a.st==="pend"?"c-lap":"c-ok")+"'>"+t("ap_"+a.st)+"</span></td></tr>";
+  }).join(""):"<tr><td colspan='4' class='empty'>—</td></tr>";
+  $("feedList").innerHTML=FEED.map(function(f){
+    return '<div class="fi"><span class="fd '+f.d+'"></span><span class="tx">'+t(f.k,f.v)+'</span>'+
+      '<span class="ago">'+t(f.a)+'</span></div>';}).join("");
+}
+
+/* ---------------- calendar ---------------- */
+var docF="all";
+function renderCal(){
+  $("btnNewAppt").textContent=t("newAppt");
+  var sel=$("docFilter");
+  sel.innerHTML='<option value="all">'+t("allDoctors")+'</option>'+DOC.map(function(d,i){
+    return '<option value="'+i+'">'+tx(d)+'</option>';}).join("");
+  sel.value=docF;
+  var ti=todayIdx(),shown=0;
+  $("week").innerHTML=DAYN.map(function(dn,d){
+    var dd=dayDate(d);
+    var list=AP.filter(function(a){return a.d===d&&(docF==="all"||a.di===+docF);})
+      .sort(byTime);
+    shown+=list.length;
+    var cards=list.map(function(a){
+      var c=byId(a.cid);
+      return '<button class="ap '+a.st+'" data-ap="'+a.id+'"><span class="t">'+a.t+'</span>'+
+        '<span class="nm">'+nm(c)+'</span><span class="w">'+tx(SVC[a.vi])+' · '+tx(WAY[a.wi])+'</span></button>';
+    }).join("");
+    return '<div class="day'+(d===ti?" today":"")+'"><h3>'+tx(dn)+'<em>'+(dd.getMonth()+1)+"/"+dd.getDate()+'</em></h3>'+
+      (cards||'<span style="font-size:11.5px;color:var(--ink-3)">—</span>')+
+      '<textarea class="memo" data-memo="'+d+'" placeholder="'+t("memoPh")+'">'+esc(MEMO[d]||"")+'</textarea></div>';
+  }).join("");
+  $("apLegend").innerHTML=['<span><i style="background:var(--warn)"></i>'+t("ap_pend")+'</span>',
+    '<span><i style="background:var(--accent)"></i>'+t("ap_conf")+'</span>',
+    '<span><i style="background:var(--ink-3)"></i>'+t("ap_done")+'</span>',
+    '<span><i style="background:var(--alert)"></i>'+t("ap_canc")+'</span>',
+    '<span class="num" style="margin-left:auto">'+shown+'</span>'].join("");
+}
+$("docFilter").addEventListener("change",function(){docF=this.value;renderCal();});
+$("week").addEventListener("click",function(e){
+  var b=e.target.closest("[data-ap]");if(b)openAppt(+b.dataset.ap);});
+$("week").addEventListener("change",function(e){
+  if(e.target.dataset.memo!==undefined){MEMO[e.target.dataset.memo]=e.target.value;toast(t("noteSaved"));}});
+
+function openAppt(id){
+  var a=apById(id);if(!a)return;var c=byId(a.cid);
+  $("apmTitle").textContent=nm(c);
+  $("apmLead").textContent=tx(DAYN[a.d])+" "+a.t+" · "+tx(SVC[a.vi])+" · "+tx(DOC[a.di]);
+  var btns=[];
+  if(a.st==="pend")btns.push(["conf",t("apConfirm"),"btn"]);
+  if(a.st!=="done"&&a.st!=="canc"){btns.push(["resch",t("apResched"),"btn sec"]);
+    btns.push(["done",t("apComplete"),"btn sec"]);btns.push(["rem",t("apRemind"),"btn sec"]);
+    btns.push(["canc",t("apCancel"),"btn dim"]);}
+  btns.push(["open",t("apOpen"),"btn sec"]);
+  $("apmBody").innerHTML='<div style="margin-bottom:14px"><span class="chip '+
+    (a.st==="pend"?"c-lap":a.st==="canc"?"c-dor":"c-ok")+'">'+t("ap_"+a.st)+'</span></div>'+
+    '<div id="reschBox" hidden><p class="note" style="margin-top:0">'+t("apNewTime")+'</p>'+
+    '<div class="gg2"><div class="field"><select class="inp" id="rsDay">'+DAYN.map(function(d,i){
+      return '<option value="'+i+'"'+(i===a.d?" selected":"")+'>'+tx(d)+' '+(dayDate(i).getMonth()+1)+'/'+dayDate(i).getDate()+'</option>';}).join("")+
+    '</select></div><div class="field"><select class="inp" id="rsTime">'+TIMES.map(function(x){
+      return '<option'+(x===a.t?" selected":"")+'>'+x+'</option>';}).join("")+'</select></div></div>'+
+    '<button class="btn blk" id="rsSave" style="margin-bottom:12px">'+t("save")+'</button></div>'+
+    '<div class="rowb" style="flex-wrap:wrap;gap:8px">'+btns.map(function(b){
+      return '<button class="'+b[2]+'" data-act="'+b[0]+'" style="flex:1 1 42%">'+b[1]+'</button>';}).join("")+'</div>';
+  $("apmBody").onclick=function(e){
+    var b=e.target.closest("[data-act]");
+    if(b){
+      var k=b.dataset.act;
+      if(k==="conf"){a.st="conf";toast(t("apConfirmed",{n:nm(c)}));closeM("mAppt");}
+      else if(k==="done"){a.st="done";toast(t("apCompleted"));closeM("mAppt");}
+      else if(k==="canc"){a.st="canc";logAdd(c,"logNote",t("apCancel"));toast(t("apCancelled",{n:nm(c)}));
+        closeM("mAppt");setTimeout(function(){toast(t("waitlist"));},900);}
+      else if(k==="rem"){logAdd(c,"logSms",t("apRemind"));toast(t("apReminded",{n:nm(c)}));closeM("mAppt");}
+      else if(k==="resch"){$("reschBox").hidden=!$("reschBox").hidden;return;}
+      else if(k==="open"){closeM("mAppt");openClient(c.id);return;}
+      renderCal();renderAll(true);return;
+    }
+    if(e.target.id==="rsSave"){
+      a.d=+$("rsDay").value;a.t=$("rsTime").value;a.st="conf";
+      toast(t("apMoved",{n:tx(DAYN[a.d])+" "+a.t}));closeM("mAppt");renderCal();renderAll(true);
+    }
+  };
+  openM("mAppt");
+}
+$("btnNewAppt").addEventListener("click",function(){
+  fill($("naClient"),CL.slice(0,40).map(function(c){return[c.id,nm(c)+" · "+phoneOf(c)];}));
+  fill($("naDay"),DAYN.map(function(d,i){return[i,tx(d)+" "+(dayDate(i).getMonth()+1)+"/"+dayDate(i).getDate()];}),String(todayIdx()));
+  fill($("naTime"),TIMES.map(function(x){return[x,x];}));
+  fill($("naSvc"),SVC.map(function(s,i){return[i,tx(s)];}));
+  fill($("naWay"),WAY.map(function(s,i){return[i,tx(s)];}));
+  openM("mNewAp");});
+function fill(sel,pairs,v){sel.innerHTML=pairs.map(function(p){
+  return '<option value="'+esc(p[0])+'">'+esc(p[1])+'</option>';}).join("");if(v!==undefined)sel.value=v;}
+$("saveNa").addEventListener("click",function(){
+  var c=byId(+$("naClient").value);
+  AP.push({id:uid++,d:+$("naDay").value,t:$("naTime").value,cid:c.id,vi:+$("naSvc").value,
+    wi:+$("naWay").value,di:c.di,st:"conf"});
+  if($("naSms").checked)logAdd(c,"logSms",t("naSms"));
+  closeM("mNewAp");renderCal();renderAll(true);toast(t("apAdded",{n:nm(c)}));});
+
+/* ---------------- clients ---------------- */
+var clF="all",clSort="days",clDir=1,clSel={};
+function clFilters(){
+  var fs=[["all","all"],["new","st_new"],["act","st_act"],["lap","st_lap"],["dor","st_dor"],["vip","vip"],["noc","noConsent"],["pkg","tab_pkg"]];
+  $("clFilters").innerHTML=fs.map(function(f){
+    return '<button class="fb" data-f="'+f[0]+'" aria-pressed="'+(clF===f[0])+'">'+t(f[1])+'</button>';}).join("")+
+    '<input class="srch" id="clSearch" type="search" placeholder="'+t("search")+'" value="'+esc(clQ)+'">'+
+    '<button class="btn sec" id="btnAddCl">'+t("addClient")+'</button>';
+}
+var clQ="";
+function matchF(c,f){
+  if(f==="all")return true;if(f==="vip")return c.vip;if(f==="noc")return !c.cs;
+  if(f==="pkg")return !!c.pkg;return c.st===f;}
+function renderClients(){
+  clFilters();
+  var rows=CL.filter(function(c){
+    return matchF(c,clF)&&(!clQ||nm(c).toLowerCase().indexOf(clQ.toLowerCase())>=0||c.phone.indexOf(clQ)>=0);
+  }).slice().sort(function(a,b){
+    var x=a[clSort],y=b[clSort];
+    if(clSort==="nm"){x=nm(a);y=nm(b);return clDir*x.localeCompare(y);}
+    if(clSort==="si")return clDir*(a.si-b.si);
+    return clDir*(x-y);});
+  $("clCount").textContent=rows.length+" / "+CL.length;
+  var th=['<th class="srt" data-k="nm">'+t("th_name")+'</th>','<th>'+t("th_phone")+'</th>',
+    '<th class="srt" data-k="days">'+t("th_last")+'</th>','<th class="n srt" data-k="days">'+t("th_days")+'</th>',
+    '<th class="n srt" data-k="visits">'+t("th_visits")+'</th>','<th class="srt" data-k="si">'+t("th_src")+'</th>',
+    '<th>'+t("th_consent")+'</th>','<th>'+t("th_status")+'</th>'];
+  $("tClients").querySelector("thead").innerHTML='<tr><th class="ckc"><input type="checkbox" id="ckAllCl" aria-label="all"></th>'+th.join("")+'</tr>';
+  $("tClients").querySelector("tbody").innerHTML=rows.length?rows.map(function(c){
+    return "<tr class='ck' data-cid='"+c.id+"'><td class='ckc'><input type='checkbox' data-sel='"+c.id+"'"+(clSel[c.id]?" checked":"")+"></td>"+
+      "<td>"+nm(c)+"</td><td class='num'>"+phoneOf(c)+"</td><td class='num'>"+dOf(c.days)+"</td>"+
+      "<td class='n'>"+c.days+"</td><td class='n'>"+c.visits+"</td><td>"+tx(SRC[c.si])+"</td>"+
+      "<td>"+(c.cs?'<span class="chip c-ok">'+t("sms")+'</span>':'')+(c.ce?' <span class="chip c-neu">'+t("email")+'</span>':'')+
+      (!c.cs&&!c.ce?'<span class="chip c-lap">'+t("noConsent")+'</span>':'')+"</td>"+
+      "<td>"+stChip(c)+"</td></tr>";
+  }).join(""):"<tr><td colspan='9' class='empty'>—</td></tr>";
+  var n=Object.keys(clSel).filter(function(k){return clSel[k];}).length;
+  $("clBulk").hidden=!n;
+  if(n)$("clBulk").innerHTML='<span class="note" style="margin:0">'+t("selN",{n:n})+'</span>'+
+    '<button class="btn sm sec" id="bkTag">'+t("bulkTag")+'</button>'+
+    '<button class="btn sm sec" id="bkSend">'+t("bulkSend")+'</button>'+
+    '<button class="btn sm dim" id="bkClear">'+t("clear")+'</button>';
+}
+$("clFilters").addEventListener("click",function(e){
+  var b=e.target.closest("[data-f]");if(b){clF=b.dataset.f;renderClients();return;}
+  if(e.target.id==="btnAddCl"){
+    fill($("ncSrc"),SRC.map(function(s,i){return[i,tx(s)];}));
+    fill($("ncSvc"),SVC.map(function(s,i){return[i,tx(s)];}));
+    $("ncName").value="";$("ncPhone").value="";openM("mNewCl");$("ncName").focus();}
+});
+$("clFilters").addEventListener("input",function(e){if(e.target.id==="clSearch"){clQ=e.target.value;
+  var p=e.target.selectionStart;renderClients();var s=$("clSearch");if(s){s.focus();s.setSelectionRange(p,p);}}});
+$("tClients").addEventListener("change",function(e){
+  if(e.target.id==="ckAllCl"){
+    $("tClients").querySelectorAll("[data-sel]").forEach(function(x){clSel[x.dataset.sel]=e.target.checked;});
+    renderClients();return;}
+  if(e.target.dataset.sel){clSel[e.target.dataset.sel]=e.target.checked;renderClients();}});
+$("tClients").querySelector("thead").addEventListener("click",function(e){
+  var th=e.target.closest(".srt");if(!th)return;
+  clDir=(th.dataset.k===clSort)?-clDir:1;clSort=th.dataset.k;renderClients();});
+$("clBulk").addEventListener("click",function(e){
+  var ids=Object.keys(clSel).filter(function(k){return clSel[k];});
+  if(e.target.id==="bkClear"){clSel={};renderClients();}
+  else if(e.target.id==="bkTag"){ids.forEach(function(i){var c=byId(+i);if(c&&c.tags.indexOf("VIP+")<0)c.tags.push("VIP+");});
+    toast(t("tagAdded",{n:"VIP+"}));clSel={};renderClients();}
+  else if(e.target.id==="bkSend"){
+    if(!can("send")){toast(t("needSend"));return;}
+    ids.forEach(function(i){var c=byId(+i);if(c&&c.cs)logAdd(c,"logSms",t("bulkSend"));});
+    info(t("sentTitle",{n:ids.length}),'<p class="lead">'+t("sentBody")+'</p>');clSel={};renderClients();}});
+$("saveNc").addEventListener("click",function(){
+  var n=$("ncName").value.trim();if(!n){toast(t("needName"));return;}
+  var c={id:uid++,zh:n,en:n,days:0,visits:1,si:+$("ncSrc").value,vi:+$("ncSvc").value,di:0,
+    phone:$("ncPhone").value.trim()||"650-555-0100",email:"",cs:$("ncSms").checked,ce:false,cw:false,
+    hist:[0],first:0,tags:[],note:"",log:[],pkg:null,refBy:null,refN:0,bday:0,ins:false};
+  retag(c);CL.unshift(c);closeM("mNewCl");renderClients();renderAll(true);toast(t("clAdded",{n:n}));});
+
+/* ---------------- drawer ---------------- */
+var dTab="ov",dId=null;
+function openClient(id){dId=id;dTab="ov";drawClient();$("drawerWrap").hidden=false;$("drawer").scrollTop=0;}
+$("drawerScrim").addEventListener("click",function(){$("drawerWrap").hidden=true;});
+document.addEventListener("click",function(e){
+  var r=e.target.closest("tr[data-cid]");
+  if(r&&!e.target.closest("input"))openClient(+r.dataset.cid);});
+function drawClient(){
+  var c=byId(dId);if(!c)return;
+  var tabs=[["ov","tab_ov"],["hist","tab_hist"],["log","tab_log"],["pkg","tab_pkg"],["note","tab_note"]];
+  var body="";
+  if(dTab==="ov"){
+    var nx=AP.filter(function(a){return a.cid===c.id&&a.st!=="canc"&&a.st!=="done";})
+      .sort(function(a,b){return a.d-b.d;})[0];
+    body='<div class="dsec"><dl class="kv">'+
+      '<dt>'+t("k_phone")+'</dt><dd class="num">'+phoneOf(c)+'</dd>'+
+      '<dt>'+t("k_email")+'</dt><dd>'+(c.email||'<span style="color:var(--ink-3)">'+t("k_none")+'</span>')+'</dd>'+
+      '<dt>'+t("k_src")+'</dt><dd>'+tx(SRC[c.si])+'</dd>'+
+      '<dt>'+t("k_doc")+'</dt><dd>'+tx(DOC[c.di])+'</dd>'+
+      '<dt>'+t("k_first")+'</dt><dd class="num">'+dOf(c.first)+'</dd>'+
+      '<dt>'+t("k_last")+'</dt><dd class="num">'+dOf(c.days)+' · '+t("k_daysAgo",{n:c.days})+'</dd>'+
+      '<dt>'+t("k_visits")+'</dt><dd class="num">'+c.visits+'</dd>'+
+      '<dt>'+t("k_next")+'</dt><dd>'+(nx?tx(DAYN[nx.d])+" "+nx.t+" · "+tx(SVC[nx.vi]):'<span style="color:var(--ink-3)">'+t("k_none")+'</span>')+'</dd>'+
+      '<dt>'+t("k_ref")+'</dt><dd>'+(c.refN?t("refMade",{n:c.refN}):"")+
+        (c.refBy&&byId(c.refBy)?(c.refN?" · ":"")+t("refBy",{n:nm(byId(c.refBy))}):"")+
+        (!c.refN&&!c.refBy?'<span style="color:var(--ink-3)">'+t("k_none")+'</span>':"")+'</dd></dl></div>'+
+      '<div class="dsec"><h3>'+t("consentTitle")+'</h3><div class="cns">'+
+      [["cs","consentSms"],["ce","consentEmail"],["cw","consentWx"]].map(function(x){
+        return '<div class="cnr"><span>'+t(x[1])+'</span><button class="sw" role="switch" data-cns="'+x[0]+
+          '" aria-checked="'+(c[x[0]]?"true":"false")+'" aria-label="'+t(x[1])+'"></button></div>';}).join("")+
+      '</div></div>'+
+      '<div class="dsec"><h3>'+t("tagsTitle")+'</h3><div class="tagrow" id="dTags"></div>'+
+      '<div class="rowb" style="margin-top:9px"><input class="inp" id="dTagIn" maxlength="10" placeholder="'+t("tagPh")+'">'+
+      '<button class="btn sec" id="dTagAdd" style="flex:0 0 72px">'+t("add")+'</button></div></div>';
+  } else if(dTab==="hist"){
+    body='<div class="dsec"><div class="tl">'+c.hist.map(function(d,i){
+      return "<div><b>"+dOf(d)+"</b> · "+tx(SVC[i===0?c.vi:(c.vi+i)%SVC.length])+" · "+tx(DOC[c.di])+"</div>";}).join("")+
+      (c.visits>c.hist.length?'<div style="color:var(--ink-3)">… '+(c.visits-c.hist.length)+'</div>':"")+'</div></div>';
+  } else if(dTab==="log"){
+    body='<div class="dsec">'+(c.log.length?'<div class="tl">'+c.log.map(function(l){
+      return "<div><b>"+(l.d?dOf(l.d):dOf(0))+"</b> · "+t(l.ty)+" · "+esc(l.tx)+
+        (l.who?' <span style="color:var(--ink-3)">· '+esc(l.who)+'</span>':"")+"</div>";}).join("")+'</div>':
+      '<p class="note" style="margin:0">'+t("noLog")+'</p>')+'</div>';
+  } else if(dTab==="pkg"){
+    body='<div class="dsec">'+(c.pkg?'<div class="pkg"><b>'+tx(PKG[c.pkg.i])+'</b>'+
+      '<div class="pkgbar"><span style="width:'+((c.pkg.total-c.pkg.used)/c.pkg.total*100)+'%"></span></div>'+
+      '<div class="note" style="margin:0">'+t("pkgLeft",{n:c.pkg.total-c.pkg.used})+' · '+t("pkgExp",{n:c.pkg.exp})+'</div></div>':
+      '<p class="note" style="margin:0">'+t("noPkg")+'</p>')+'</div>';
+  } else {
+    body='<div class="dsec"><textarea class="ta" id="dNote" style="min-height:120px" placeholder="'+t("notePh")+'">'+esc(c.note)+'</textarea>'+
+      '<p class="note">'+t("noteFine")+'</p></div>';
+  }
+  $("drawer").innerHTML='<div class="dtop"><div class="dhd"><div><h2>'+esc(nm(c))+'</h2>'+
+    '<div class="meta">'+stChip(c)+'</div></div><button class="xb" id="dClose">✕</button></div>'+
+    '<div class="dtabs">'+tabs.map(function(x){
+      return '<button data-tab="'+x[0]+'" aria-selected="'+(dTab===x[0])+'">'+t(x[1])+'</button>';}).join("")+'</div></div>'+
+    '<div class="dbody">'+body+'</div>'+
+    '<div class="dact"><button class="btn" data-da="sms">'+t("act_sms")+'</button>'+
+    '<button class="btn sec" data-da="book">'+t("act_book")+'</button>'+
+    (dTab==="note"?'<button class="btn sec" data-da="note">'+t("act_saveNote")+'</button>':
+     '<button class="btn sec" data-da="email">'+t("act_email")+'</button>')+'</div>';
+  if(dTab==="ov")drawTags(c);
+}
+function drawTags(c){
+  $("dTags").innerHTML=c.tags.length?c.tags.map(function(x,i){
+    return '<button class="tagx" data-tg="'+i+'">'+esc(x)+' ✕</button>';}).join(""):
+    '<span style="font-size:12px;color:var(--ink-3)">'+t("noTags")+'</span>';
+}
+$("drawer").addEventListener("click",function(e){
+  var c=byId(dId);if(!c)return;
+  if(e.target.id==="dClose"){$("drawerWrap").hidden=true;return;}
+  var tb=e.target.closest("[data-tab]");if(tb){dTab=tb.dataset.tab;drawClient();return;}
+  var sw=e.target.closest("[data-cns]");if(sw){var k=sw.dataset.cns;c[k]=!c[k];
+    toast(t(c[k]?"consentOn":"consentOff"));drawClient();renderAll(true);return;}
+  var tg=e.target.closest("[data-tg]");if(tg){c.tags.splice(+tg.dataset.tg,1);drawTags(c);toast(t("tagRemoved"));return;}
+  if(e.target.id==="dTagAdd"){var v=$("dTagIn").value.trim();if(!v)return;
+    c.tags.push(v);$("dTagIn").value="";drawTags(c);toast(t("tagAdded",{n:v}));return;}
+  var da=e.target.closest("[data-da]");if(!da)return;
+  var k2=da.dataset.da;
+  if(k2==="note"){c.note=$("dNote").value;toast(t("noteSaved"));}
+  else if(k2==="sms"){if(!c.cs){toast(t("noConsent"));return;}
+    logAdd(c,"logSms",t("act_sms"));toast(t("smsSent",{n:nm(c)}));if(dTab==="log")drawClient();}
+  else if(k2==="email"){if(!c.ce){toast(t("noConsent"));return;}
+    logAdd(c,"logEmail",t("act_email"));toast(t("emailSent",{n:nm(c)}));if(dTab==="log")drawClient();}
+  else if(k2==="book"){$("drawerWrap").hidden=true;go("ap");$("btnNewAppt").click();
+    setTimeout(function(){$("naClient").value=String(c.id);},50);}
+  renderAll(true);
+});
+/* ---------------- recall ---------------- */
+var rcCh=0,rcSeg="all",rcSel={},RCMSG=["","",""];
+function resetMsgs(){
+  var cl=tx(T.clinic),dc=tx(T.doc),ph=T.phone;
+  RCMSG[0]=lang?
+    "["+cl+"] Hi {name}, it's been a while since your last visit. As the weather turns, this is a good time for neck, shoulder and sleep support. "+dc+" still has openings this week. Call "+ph+" to book. Reply STOP to opt out."
+    :"【"+cl+"】{姓名} 您好，距离您上次到店调理已有一段时间。\n入秋转凉，是调理肩颈和睡眠的好时节，"+dc+" 医师本周仍有空档。\n预约请致电 "+ph+"。回复 STOP 退订。";
+  RCMSG[1]=lang?
+    "Hi {name},\n\nWe noticed it's been a few months since your last session. Seasonal change is when old aches and poor sleep tend to come back, so we've put together three things you can do at home — and we've kept a few slots open this week.\n\nBook: "+ph+"\n\n"+cl+"\nUnsubscribe at the bottom of this email."
+    :"{姓名} 您好，\n\n距离您上次调理已有几个月。换季时节，旧伤和睡眠问题容易反复，我们整理了三个在家就能做的调理方法，本周也留了几个空档。\n\n预约请致电 "+ph+"。\n\n"+cl+"\n如不想再收到邮件，可点击页尾退订。";
+  RCMSG[2]=lang?
+    "Hi {name} — sharing this week's seasonal wellness notes with everyone in the group. If anything feels off lately, send me a message and I'll help you find a time.\n— "+cl
+    :"{姓名} 您好，这周的节气养生内容已经发在群里了。最近身体有不舒服的地方，可以直接发消息给我，帮您安排时间。\n—— "+cl;
+  $("blMsg").value=lang?
+    "["+cl+"] Autumn equinox note: bigger day-night temperature swings make stiff shoulders and poor sleep more common. Reply WELLNESS and we'll send three things you can do at home. To book, call "+ph+". Reply STOP to opt out."
+    :"【"+cl+"】秋分养生提醒：昼夜温差变大，容易肩颈僵硬、入睡困难。\n回复「养生」即可收到三个在家就能做的调理动作。\n需要面诊请致电 "+ph+"。回复 STOP 退订。";
+  $("rcMsg").value=RCMSG[rcCh];
+}
+function rcConsent(c){return rcCh===0?c.cs:rcCh===1?(c.ce&&!!c.email):c.cw;}
+function rcPool(){return recallAll().filter(function(c){return rcSeg==="all"||c.st===rcSeg;});}
+function renderRecall(){
+  $("rcChan").innerHTML=[["sms",0],["email",1],["wechat",2]].map(function(x){
+    return '<button data-ch="'+x[1]+'" aria-pressed="'+(rcCh===x[1])+'">'+t(x[0])+'</button>';}).join("");
+  $("rcSeg").innerHTML=[["all","rc_segAll"],["lap","rc_segLap"],["dor","rc_segDor"]].map(function(x){
+    return '<button class="fb" data-sg="'+x[0]+'" aria-pressed="'+(rcSeg===x[0])+'">'+t(x[1])+'</button>';}).join("");
+  var pool=rcPool(),ok=pool.filter(rcConsent),no=pool.length-ok.length;
+  $("rcStats").innerHTML=t("rc_stats",{a:pool.length,b:ok.length,c:t(["sms","email","wechat"][rcCh]),d:no});
+  $("rcTplTitle").textContent=t(["rc_tplSms","rc_tplEmail","rc_tplWx"][rcCh]);
+  $("tRecall").querySelector("thead").innerHTML='<tr><th class="ckc"><input type="checkbox" id="ckAllRc" aria-label="all"></th>'+
+    '<th>'+t("th_name")+'</th><th>'+t("th_last")+'</th><th class="n">'+t("th_days")+'</th><th>'+t("th_status")+'</th></tr>';
+  $("tRecall").querySelector("tbody").innerHTML=pool.length?pool.map(function(c){
+    var able=rcConsent(c);
+    return "<tr><td class='ckc'>"+(able?"<input type='checkbox' data-rc='"+c.id+"'"+(rcSel[c.id]!==false?" checked":"")+">":"—")+"</td>"+
+      "<td class='ck' data-cid='"+c.id+"'>"+nm(c)+"</td><td class='num'>"+dOf(c.days)+"</td><td class='n'>"+c.days+"</td>"+
+      "<td>"+(able?stChip(c):'<span class="chip c-lap">'+t("noConsent")+'</span> <button class="btn sm dim" data-inv="'+c.id+'">'+t("invite")+'</button>')+"</td></tr>";
+  }).join(""):"<tr><td colspan='5' class='empty'>—</td></tr>";
+  var n=ok.filter(function(c){return rcSel[c.id]!==false;}).length;
+  $("rcEst").innerHTML=t("rc_est")+' <b class="num">'+t("rc_people",{n:Math.round(n*0.1)})+'</b>';
+  $("btnPreview").textContent=t("preview");
+  $("btnSend").textContent=t("send",{n:n});
+  $("btnSend").disabled=n===0||!can("send");
+  $("rcQuiet").textContent=t("rc_quiet");
+  var ca=$("ckAllRc");if(ca)ca.checked=n===ok.length&&ok.length>0;
+}
+$("rcChan").addEventListener("click",function(e){var b=e.target.closest("[data-ch]");if(!b)return;
+  rcCh=+b.dataset.ch;$("rcMsg").value=RCMSG[rcCh];renderRecall();});
+$("rcSeg").addEventListener("click",function(e){var b=e.target.closest("[data-sg]");if(!b)return;
+  rcSeg=b.dataset.sg;renderRecall();});
+$("rcMsg").addEventListener("input",function(){RCMSG[rcCh]=this.value;});
+$("tRecall").addEventListener("change",function(e){
+  if(e.target.id==="ckAllRc"){rcPool().filter(rcConsent).forEach(function(c){rcSel[c.id]=e.target.checked;});renderRecall();return;}
+  if(e.target.dataset.rc){rcSel[e.target.dataset.rc]=e.target.checked;renderRecall();}});
+$("tRecall").addEventListener("click",function(e){
+  var b=e.target.closest("[data-inv]");if(!b)return;
+  var c=byId(+b.dataset.inv);logAdd(c,"logSms",t("invite"));toast(t("inviteSent",{n:1}));});
+$("btnPreview").addEventListener("click",function(){
+  var first=rcPool().filter(function(c){return rcConsent(c)&&rcSel[c.id]!==false;})[0];
+  if(!first){toast(t("needName"));return;}
+  info(t("preview")+" · "+nm(first),
+    '<div class="pv">'+esc($("rcMsg").value.replace(/\{姓名\}|\{name\}/g,nm(first)))+'</div>');});
+$("btnSend").addEventListener("click",function(){
+  if(!can("send")){toast(t("needSend"));return;}
+  var list=rcPool().filter(function(c){return rcConsent(c)&&rcSel[c.id]!==false;});
+  list.forEach(function(c){logAdd(c,["logSms","logEmail","logNote"][rcCh],t(["rc_tplSms","rc_tplEmail","rc_tplWx"][rcCh]));});
+  info(t("sentTitle",{n:list.length}),'<p class="lead">'+t("sentBody")+'</p>');
+  renderAll(true);});
+
+/* ---------------- automation ---------------- */
+var blF="act";
+function ruleNeeds(r){return r.ch===0?"cs":"ce";}
+function renderAuto(){
+  var noc=CL.filter(function(c){return !c.cs;}).length;
+  var rows=[{ok:1,k:"cmp_stop"},{ok:1,k:"cmp_quiet"},{ok:0,k:"cmp_consent",v:{n:noc}},{ok:0,k:"cmp_baa"},{ok:1,k:"cmp_phi"}];
+  $("cmpList").innerHTML=rows.map(function(r){
+    return '<div class="cmpr '+(r.ok?"ok":"no")+'"><span class="mk">'+(r.ok?"✓":"!")+'</span><span>'+t(r.k,r.v)+'</span></div>';}).join("");
+  $("rulesGrid").innerHTML=RULES.map(function(r){
+    var key=ruleNeeds(r),able=CL.filter(function(c){return c[key];}).length,no=CL.length-able;
+    return '<div class="rule'+(r.on?"":" off")+'"><div class="tp"><span class="nm">'+tx(r.nm)+'</span>'+
+      '<button class="sw" role="switch" data-ru="'+r.id+'" aria-checked="'+r.on+'" aria-label="'+tx(r.nm)+'"'+
+      (can("rules")?"":" disabled")+'></button></div>'+
+      '<div class="mt">'+t("ru_trig")+'：'+tx(r.tg)+'<br>'+t("ru_chan")+'：'+t(["sms","email","wechat"][r.ch])+
+      ' · '+t("ru_needs",{n:t(r.ch===0?"consentSms":"consentEmail")})+'</div>'+
+      '<div class="st">'+(r.on?t("ru_sent",{n:r.sent}):t("ru_off"))+' · '+t("ru_cover",{a:able,b:no})+'</div>'+
+      '<button class="btn sm dim" data-edit="'+r.id+'" style="align-self:flex-start">'+t("ruMsg")+'</button></div>';
+  }).join("");
+  var on=RULES.filter(function(r){return r.on;});
+  $("auStamp").textContent=t("auStamp",{a:on.reduce(function(s,r){return s+r.sent;},0),b:RULES.length-on.length});
+  $("blFilters").innerHTML=[["act","blAct"],["new","blNew"],["vip","blVip"],["all","blAll"]].map(function(x){
+    return '<button class="fb" data-bl="'+x[0]+'" aria-pressed="'+(blF===x[0])+'">'+t(x[1])+'</button>';}).join("");
+  $("blCount").innerHTML=t("blCount",{n:blPool().length});
+  $("btnBlast").textContent=t("blSend");
+  $("btnBlast").disabled=!can("send");
+}
+function blPool(){return CL.filter(function(c){
+  return (blF==="all"?true:blF==="vip"?c.vip:c.st===blF)&&c.cs;});}
+$("rulesGrid").addEventListener("click",function(e){
+  var sw=e.target.closest("[data-ru]");
+  if(sw){if(!can("rules")){denyOwner();return;}
+    var r=RULES.filter(function(x){return x.id===sw.dataset.ru;})[0];
+    r.on=!r.on;renderAuto();renderOverview();toast(t(r.on?"ruleOn":"ruleOff",{n:tx(r.nm)}));return;}
+  var ed=e.target.closest("[data-edit]");
+  if(ed){if(!can("rules")){denyOwner();return;}
+    var r2=RULES.filter(function(x){return x.id===ed.dataset.edit;})[0];
+    $("ruTitle").textContent=tx(r2.nm);$("ruLead").textContent=tx(r2.tg);
+    $("ruDays").value=r2.days;
+    fill($("ruChan"),[[0,t("sms")],[1,t("email")],[2,t("wechat")]],String(r2.ch));
+    $("ruMsg").value=r2.msg||RCMSG[r2.ch];
+    $("saveRu").textContent=t("save");$("saveRu").dataset.id=r2.id;openM("mRule");}
+});
+$("saveRu").addEventListener("click",function(){
+  var r=RULES.filter(function(x){return x.id===$("saveRu").dataset.id;})[0];
+  if(r){r.days=+$("ruDays").value||0;r.ch=+$("ruChan").value;r.msg=$("ruMsg").value;}
+  closeM("mRule");renderAuto();toast(t("ruleSaved"));});
+$("blFilters").addEventListener("click",function(e){var b=e.target.closest("[data-bl]");if(!b)return;
+  blF=b.dataset.bl;renderAuto();});
+$("btnBlast").addEventListener("click",function(){
+  if(!can("send")){toast(t("needSend"));return;}
+  var p=blPool();p.forEach(function(c){logAdd(c,"logSms",t("blastTitle"));});
+  info(t("sentTitle",{n:p.length}),'<p class="lead">'+t("sentBody")+'</p>');renderAll(true);});
+
+/* ---------------- reviews ---------------- */
+var rvF="all";
+function renderReviews(){
+  $("btnInvite").textContent=t("rv_invite");
+  var avg=(RV.reduce(function(s,r){return s+r.stars;},0)/RV.length).toFixed(1);
+  var mon=RV.filter(function(r){return r.days<=30;}).length;
+  var low=RV.filter(function(r){return r.stars<=3;}).length;
+  var pend=RV.filter(function(r){return !r.reply;}).length;
+  $("rvTiles").innerHTML=[["rv_avg",avg,"rv_avg_f",{n:RV.length}],["rv_month",mon,"rv_month_f"],
+    ["rv_low",low,"rv_low_f",null,"flag"],["rv_pending",pend,"rv_pending_f"]].map(function(x){
+    return '<div class="tile'+(x[4]?" flag":"")+'"><span class="lb">'+t(x[0])+'</span><span class="vv">'+x[1]+
+      '</span><span class="ft">'+t(x[2],x[3])+'</span></div>';}).join("");
+  $("rvFilters").innerHTML=[["all","rv_all"],["high","rv_high"],["low","rv_lowf"],["need","rv_need"]].map(function(x){
+    return '<button class="fb" data-rv="'+x[0]+'" aria-pressed="'+(rvF===x[0])+'">'+t(x[1])+'</button>';}).join("");
+  var list=RV.filter(function(r){
+    return rvF==="all"||(rvF==="high"?r.stars>=4:rvF==="low"?r.stars<=3:!r.reply);});
+  $("rvList").innerHTML=list.length?list.map(function(r){
+    var c=byId(r.cid);
+    return '<div class="rv'+(r.stars<=3?" low":"")+'"><div class="rvh">'+
+      '<span><b>'+(c?esc(nm(c)):"—")+'</b> <span style="color:var(--ink-3);font-size:12px">· '+dOf(r.days)+'</span></span>'+
+      '<span class="stars">'+[1,2,3,4,5].map(function(i){
+        return i<=r.stars?"★":'<span class="off">★</span>';}).join("")+'</span></div>'+
+      '<p class="body">'+esc(tx(r.tx))+'</p>'+
+      (r.reply?'<div class="rvrep"><b>'+t("rv_replied")+'：</b>'+esc(tx(r.reply))+'</div>':
+        '<button class="btn sm sec" data-rep="'+r.id+'" style="margin-top:10px">'+t("rv_reply")+'</button>')+'</div>';
+  }).join(""):'<p class="note">'+t("rv_none")+'</p>';
+}
+$("rvFilters").addEventListener("click",function(e){var b=e.target.closest("[data-rv]");if(!b)return;
+  rvF=b.dataset.rv;renderReviews();});
+$("rvList").addEventListener("click",function(e){
+  var b=e.target.closest("[data-rep]");if(!b)return;
+  var r=RV.filter(function(x){return x.id===+b.dataset.rep;})[0];
+  r.reply=RVREPLY[0];renderReviews();renderNav();toast(t("rv_replyDone"));});
+$("btnInvite").addEventListener("click",function(){
+  var n=CL.filter(function(c){return c.days<=2&&c.cs;}).length||4;
+  CL.filter(function(c){return c.days<=2&&c.cs;}).forEach(function(c){logAdd(c,"logSms",t("rv_invite"));});
+  toast(t("rv_inviteDone",{n:n}));renderAll(true);});
+
+/* ---------------- reports ---------------- */
+var rpRange=6;
+var VIS12=[78,85,81,92,96,104,99,118,126,141,133,147];
+var NEW12=[7,9,8,10,9,11,8,13,15,17,14,18];
+var MONEN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function monLabels(n){
+  var out=[],m=NOW.getMonth();
+  for(var i=n-1;i>=0;i--){var k=(m-i+120)%12;out.push(lang?MONEN[k]:(k+1)+" 月");}
+  return out;}
+function renderReports(){
+  $("rangeSeg").innerHTML=[[6,"range6"],[12,"range12"]].map(function(x){
+    return '<button data-rg="'+x[0]+'" aria-pressed="'+(rpRange===x[0])+'">'+t(x[1])+'</button>';}).join("");
+  var tally=SRC.map(function(){return 0;}),q=SRC.map(function(){return{v:0,a:0};});
+  CL.forEach(function(c){tally[c.si]++;q[c.si].v+=c.visits;if(c.days<=90)q[c.si].a++;});
+  var pairs=SRC.map(function(s,i){return{i:i,n:tally[i]};}).sort(function(a,b){return b.n-a.n;});
+  var max=pairs[0].n||1;
+  $("srcHint").textContent=CL.length;
+  $("srcChart").innerHTML=pairs.map(function(p){
+    return '<div class="hbr" data-tp="'+esc(tx(SRC[p.i]))+' · '+p.n+' ('+Math.round(p.n/CL.length*100)+'%)">'+
+      '<span>'+tx(SRC[p.i])+'</span><span class="tk"><span class="fl" style="width:'+(p.n/max*100)+'%"></span></span>'+
+      '<span class="vv">'+p.n+'</span></div>';}).join("");
+  Array.prototype.forEach.call($("srcChart").children,function(el){
+    el.addEventListener("mousemove",function(ev){showTip(ev,el.dataset.tp);});
+    el.addEventListener("mouseleave",hideTip);});
+
+  var vis=VIS12.slice(12-rpRange),nw=NEW12.slice(12-rpRange),labs=monLabels(rpRange);
+  var vmax=Math.max.apply(null,vis);
+  $("trendLg").innerHTML='<span><i style="background:var(--chart-1)"></i>'+t("lgVisits")+'</span>'+
+    '<span><i style="background:var(--chart-2)"></i>'+t("lgNew")+'</span>';
+  $("trendChart").innerHTML=labs.map(function(m,i){
+    return '<div class="gc"><span class="gv'+(i===labs.length-1?" hi":"")+'">'+vis[i]+'</span><div class="gp">'+
+      '<span class="gb s1" style="height:'+(vis[i]/vmax*100)+'%" data-tp="'+m+' · '+t("lgVisits")+' '+vis[i]+'"></span>'+
+      '<span class="gb s2" style="height:'+(nw[i]/vmax*100)+'%" data-tp="'+m+' · '+t("lgNew")+' '+nw[i]+'"></span>'+
+      '</div></div>';}).join("");
+  $("trendAxis").innerHTML=labs.map(function(m){return "<span>"+m+"</span>";}).join("");
+  $("trendNote").textContent=t("trendNote",{a:nw[0],b:nw[nw.length-1],c:vis[0],d:vis[vis.length-1]});
+  Array.prototype.forEach.call($("trendChart").querySelectorAll(".gb"),function(el){
+    el.addEventListener("mousemove",function(ev){showTip(ev,el.dataset.tp);});
+    el.addEventListener("mouseleave",hideTip);});
+
+  var fb=[["fun1",CL.filter(function(c){return c.visits===1;}).length],
+          ["fun2",CL.filter(function(c){return c.visits===2;}).length],
+          ["fun3",CL.filter(function(c){return c.visits>=3&&c.visits<=5;}).length],
+          ["fun6",CL.filter(function(c){return c.visits>=6;}).length]];
+  var fmax=Math.max.apply(null,fb.map(function(x){return x[1];}))||1;
+  $("funChart").innerHTML=fb.map(function(x){
+    return '<div class="fnr"><span>'+t(x[0])+'</span><span class="tk"><span class="fl" style="width:'+
+      Math.max(12,x[1]/fmax*100)+'%">'+x[1]+'</span></span>'+
+      '<span class="rt">'+Math.round(x[1]/CL.length*100)+'%</span></div>';}).join("");
+
+  $("tQual").querySelector("thead").innerHTML="<tr><th>"+t("th_src")+"</th><th class='n'>"+t("th_count")+
+    "</th><th class='n'>"+t("th_avg")+"</th><th class='n'>"+t("th_active")+"</th><th class='n'>"+t("th_rate")+"</th></tr>";
+  var qr=pairs.map(function(p){var n=p.n||1;
+    return{s:tx(SRC[p.i]),n:p.n,avg:(q[p.i].v/n),a:q[p.i].a,r:Math.round(q[p.i].a/n*100)};})
+    .sort(function(a,b){return b.r-a.r;});
+  $("tQual").querySelector("tbody").innerHTML=qr.map(function(r){
+    return "<tr><td>"+r.s+"</td><td class='n'>"+r.n+"</td><td class='n'>"+r.avg.toFixed(1)+
+      "</td><td class='n'>"+r.a+"</td><td class='n'>"+r.r+"%</td></tr>";}).join("");
+
+  $("tEff").querySelector("thead").innerHTML="<tr><th>"+t("th_rule")+"</th><th class='n'>"+t("th_sent")+
+    "</th><th class='n'>"+t("th_reply")+"</th><th class='n'>"+t("th_booked")+"</th><th class='n'>"+t("th_conv")+"</th></tr>";
+  var onR=RULES.filter(function(r){return r.on;});
+  $("tEff").querySelector("tbody").innerHTML=onR.length?onR.map(function(r){
+    return "<tr><td>"+tx(r.nm)+"</td><td class='n'>"+r.sent+"</td><td class='n'>"+r.rep+
+      "</td><td class='n'>"+r.bk+"</td><td class='n'>"+(r.sent?Math.round(r.bk/r.sent*100):0)+"%</td></tr>";}).join(""):
+    "<tr><td colspan='5' class='empty'>—</td></tr>";
+
+  var best=qr[0],top=pairs[0],worst=qr[qr.length-1];
+  $("rpTake").innerHTML=(best.s===tx(SRC[top.i]))
+    ?t("takeaway2",{a:best.s,b:top.n,d:best.r,e:best.avg.toFixed(1),f:worst.s,g:worst.n,h:worst.r})
+    :t("takeaway",{a:tx(SRC[top.i]),b:top.n,c:best.s,d:best.r,e:best.avg.toFixed(1)});
+}
+$("rangeSeg").addEventListener("click",function(e){var b=e.target.closest("[data-rg]");if(!b)return;
+  rpRange=+b.dataset.rg;renderReports();});
+
+/* ---------------- settings / about ---------------- */
+function renderAbout(){
+  $("aboutLead").textContent=t("aboutLead");
+  $("aboutRows").innerHTML=["ab1","ab2","ab3"].map(function(k,i){
+    return '<div class="abr"><span class="n">'+(i+1)+'</span><span>'+t(k)+'</span></div>';}).join("");
+  $("aboutWarn").innerHTML=t("aboutWarn");
+  $("aboutOk").textContent=t("ok");
+}
+$("btnAbout").addEventListener("click",function(){renderAbout();openM("mAbout");});
+$("btnSet").addEventListener("click",function(){
+  $("iClinic").value=tx(T.clinic);$("iDoc").value=tx(T.doc);$("iPhone").value=T.phone;
+  $("saveSet").textContent=t("apply");openM("mSet");$("iClinic").focus();});
+$("saveSet").addEventListener("click",function(){
+  var v=$("iClinic").value.trim();if(v)T.clinic=[v,v];
+  var d=$("iDoc").value.trim();if(d)T.doc=[d,d];
+  var p=$("iPhone").value.trim();if(p)T.phone=p;
+  closeM("mSet");resetMsgs();renderAll();toast(t("apply"));});
+
+/* ---------------- shell wiring ---------------- */
+function renderRail(){
+  $("railClinic").textContent=tx(T.clinic);
+  var rs=[["front","rFront"],["mkt","rMkt"],["owner","rOwner"]];
+  $("roleSel").innerHTML=rs.map(function(r){
+    return '<option value="'+r[0]+'"'+(ST.role===r[0]?" selected":"")+'>'+t(r[1])+'</option>';}).join("");
+}
+$("roleSel").addEventListener("change",function(){
+  ST.role=this.value;clSel={};renderNav();
+  if(perm().views.indexOf(ST.view)<0)go(perm().views[0]);else go(ST.view);
+  renderAll();toast(t("roleLabel")+"："+t(ROLEN[ST.role]));});
+function setLang(v){lang=v;ST.lang=v;applyI18n();renderLogin();resetMsgs();renderRail();renderAll();
+  if(!$("mAbout").hidden)renderAbout();}
+$("btnLang").addEventListener("click",function(){setLang(1-lang);});
+$("langLogin").addEventListener("click",function(){setLang(1-lang);});
+$("btnTheme").addEventListener("click",function(){
+  var r=document.documentElement;
+  var dark=r.getAttribute("data-theme")==="dark"||
+    (!r.getAttribute("data-theme")&&window.matchMedia("(prefers-color-scheme: dark)").matches);
+  r.setAttribute("data-theme",dark?"light":"dark");});
+$("btnReset").addEventListener("click",function(){
+  buildData();clSel={};rcSel={};TODO={};resetMsgs();renderAll();toast(t("resetDone"));});
+$("btnExit").addEventListener("click",function(){$("app").hidden=true;$("login").hidden=false;window.scrollTo(0,0);});
+
+function renderLogin(){
+  var rs=[["front","rFront","rFrontD",'<path d="M4 20v-1.5A4.5 4.5 0 0 1 8.5 14h3A4.5 4.5 0 0 1 16 18.5V20"/><circle cx="10" cy="8" r="3.4"/><path d="M17 4h4v4"/>'],
+          ["mkt","rMkt","rMktD",'<path d="M4 9v6h3l6 4V5L7 9z"/><path d="M17 9.5a4 4 0 0 1 0 5"/>'],
+          ["owner","rOwner","rOwnerD",'<path d="M4 18h16"/><path d="M5 15l-1-7 4.5 3L12 5l3.5 6L20 8l-1 7z"/>']];
+  $("roleCards").innerHTML=rs.map(function(r){
+    return '<button class="rolecard" data-role="'+r[0]+'"><span class="ri"><svg viewBox="0 0 24 24">'+r[3]+
+      '</svg></span><h3>'+t(r[1])+'</h3><p>'+t(r[2])+'</p></button>';}).join("");
+}
+$("roleCards").addEventListener("click",function(e){
+  var b=e.target.closest("[data-role]");if(!b)return;
+  ST.role=b.dataset.role;
+  $("login").hidden=true;$("app").hidden=false;
+  renderRail();renderNav();renderAll();go(perm().views[0]);
+  if(!window.__abShown){window.__abShown=1;renderAbout();setTimeout(function(){openM("mAbout");},260);}
+});
+
+function renderAll(soft){
+  renderRail();renderNav();renderOverview();renderClients();renderRecall();renderAuto();renderReviews();
+  if(!soft||ST.view==="ap")renderCal();
+  if(ST.view==="rp")renderReports();
+  ["saveNa","saveNc","saveRu"].forEach(function(i){$(i).textContent=t("save");});
+  document.querySelectorAll('[data-close="mSet"],[data-close="mNewAp"],[data-close="mNewCl"],[data-close="mRule"]')
+    .forEach(function(b){if(b.classList.contains("sec"))b.textContent=t("cancel");});
+}
+
+/* ---------------- boot ---------------- */
+applyI18n();buildData();resetMsgs();renderLogin();renderRail();
+})();
+</script>
+</body>
+</html>
